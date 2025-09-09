@@ -829,8 +829,8 @@
                 stroke(0);
                 strokeWeight(1);
                 noFill();
-                ellipse(x, y, size * 1.8, size * 1.8);
-                ellipse(x, y, size * 2.2, size * 2.2);
+                ellipse(x, y, size * 1.65, size * 1.65);
+                ellipse(x, y, size * 2.35, size * 2.35);
             }
             
             // Draw label
@@ -844,7 +844,7 @@
                 let labelOffset;
                 if (planet.name === "Saturn") {
                     // For Saturn, position label outside the rings
-                    labelOffset = (size * 2.2 / 2) + 12; // Outside the outer ring
+                    labelOffset = (size * 2.35 / 2) + 12; // Outside the outer ring
                 } else {
                     // For other planets, position label 5% farther from planet edge
                     labelOffset = (size / 2) * 1.05 + 8; // 5% farther than before
@@ -885,8 +885,8 @@
                 stroke(0);
                 strokeWeight(1);
                 noFill();
-                ellipse(x, y, size * 1.8, size * 1.8);
-                ellipse(x, y, size * 2.2, size * 2.2);
+                ellipse(x, y, size * 1.65, size * 1.65);
+                ellipse(x, y, size * 2.35, size * 2.35);
             }
         }
         
@@ -924,7 +924,7 @@
                     let labelOffset;
                     if (planet.name === "Saturn") {
                         // For Saturn, position label outside the rings
-                        labelOffset = (size * 2.2 / 2) + 12; // Outside the outer ring
+                        labelOffset = (size * 2.35 / 2) + 12; // Outside the outer ring
                     } else {
                         // For other planets, position label 5% farther from planet edge
                         labelOffset = (size / 2) * 1.05 + 8; // 5% farther than before
@@ -967,8 +967,8 @@
             
             if (planet.name === "Saturn") {
                 // Special hatching for Saturn: planet + ring space, but not between inner ring and planet
-                const innerRingRadius = radius * 1.8;
-                const outerRingRadius = radius * 2.2;
+                const innerRingRadius = radius * 1.65;
+                const outerRingRadius = radius * 2.35;
                 
                 // Hatch the planet itself
                 drawHatchingLines(x, y, radius, baseAngle, hatchDensity);
