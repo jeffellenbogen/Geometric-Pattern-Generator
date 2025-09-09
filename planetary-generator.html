@@ -636,9 +636,7 @@
             if (showOrbits) {
                 push();
                 // SVG Group: Orbital Paths Layer
-                beginShape();
                 drawOrbits(centerX, centerY, zoomLevel);
-                endShape();
                 pop();
             }
             
@@ -646,9 +644,7 @@
             if (showAsteroidBelt) {
                 push();
                 // SVG Group: Asteroid Belt Layer
-                beginShape();
                 drawAsteroidBelt(centerX, centerY, zoomLevel);
-                endShape();
                 pop();
             }
             
@@ -660,18 +656,14 @@
                 if (showPlanet) {
                     push();
                     // SVG Group: Planet Layer - {planet.name}
-                    beginShape();
                     drawPlanetOnly(planet, centerX, centerY, zoomLevel, planetSizeScale);
-                    endShape();
                     pop();
                     
                     // Layer 3.5: Planet Hatching (separate layer for each planet)
                     if (enableHatching) {
                         push();
                         // SVG Group: Planet Hatching Layer - {planet.name}
-                        beginShape();
                         drawPlanetHatching(planet, centerX, centerY, zoomLevel, planetSizeScale, hatchDensity);
-                        endShape();
                         pop();
                     }
                 }
@@ -681,21 +673,17 @@
             if (showLabels) {
                 push();
                 // SVG Group: Planet Labels Layer
-                beginShape();
                 drawAllLabels(centerX, centerY, zoomLevel, planetSizeScale);
                 if (showAsteroidBelt) {
                     drawAsteroidBeltLabel(centerX, centerY, zoomLevel);
                 }
-                endShape();
                 pop();
             }
             
             // Layer 5: Date Display
             push();
             // SVG Group: Date Display Layer
-            beginShape();
             drawDateDisplay();
-            endShape();
             pop();
         }
         
