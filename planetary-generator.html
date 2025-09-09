@@ -628,7 +628,7 @@
             // Layer 1: Orbital Paths
             if (showOrbits) {
                 push();
-                // Create orbits layer
+                // Create orbits layer with descriptive name
                 beginShape();
                 drawOrbits(centerX, centerY, zoomLevel);
                 endShape();
@@ -638,7 +638,7 @@
             // Layer 2: Asteroid Belt
             if (showAsteroidBelt) {
                 push();
-                // Create asteroid belt layer
+                // Create asteroid belt layer with descriptive name
                 beginShape();
                 drawAsteroidBelt(centerX, centerY, zoomLevel);
                 endShape();
@@ -652,7 +652,7 @@
                 
                 if (showPlanet) {
                     push();
-                    // Create individual planet layer
+                    // Create individual planet layer with descriptive name
                     beginShape();
                     drawPlanetOnly(planet, centerX, centerY, zoomLevel, planetSizeScale);
                     endShape();
@@ -672,7 +672,7 @@
             // Layer 4: All Labels
             if (showLabels) {
                 push();
-                // Create labels layer
+                // Create labels layer with descriptive name
                 beginShape();
                 drawAllLabels(centerX, centerY, zoomLevel, planetSizeScale);
                 if (showAsteroidBelt) {
@@ -681,6 +681,13 @@
                 endShape();
                 pop();
             }
+            
+            // Layer 5: Date Display
+            push();
+            beginShape();
+            drawDateDisplay();
+            endShape();
+            pop();
         }
         
         function drawOrbits(centerX, centerY, zoomLevel) {
@@ -769,6 +776,29 @@
             textAlign(CENTER);
             textSize(10);
             text("Asteroid Belt", centerX, centerY + middleRadius + 20);
+        }
+        
+        function drawDateDisplay() {
+            const year = document.getElementById('year').value;
+            const monthIndex = parseInt(document.getElementById('month').value);
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            const monthName = monthNames[monthIndex];
+            
+            // Position at bottom center of canvas
+            const x = width / 2;
+            const y = height - 20;
+            
+            // Style for date display - twice as big as before
+            fill(0);
+            noStroke();
+            textAlign(CENTER);
+            textSize(32);
+            
+            // Draw the date text
+            text(`${monthName} ${year}`, x, y);
         }
         
         function drawPlanet(planet, centerX, centerY, zoomLevel, planetSizeScale, showLabels) {
