@@ -617,8 +617,15 @@
             strokeWeight(1);
             noFill();
             
-            // Create SVG layers for pen plotting
+            // Create SVG layers for pen plotting with named groups
             createSVGLayers(effectiveCenterX, effectiveCenterY, zoomLevel, planetSizeScale, showOrbits, showLabels, showAsteroidBelt);
+        }
+        
+        function createSVGGroup(groupName) {
+            // Create an SVG group with a descriptive name
+            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            group.setAttribute('id', groupName);
+            return group;
         }
         
         function createSVGLayers(centerX, centerY, zoomLevel, planetSizeScale, showOrbits, showLabels, showAsteroidBelt) {
@@ -628,7 +635,7 @@
             // Layer 1: Orbital Paths
             if (showOrbits) {
                 push();
-                // Create orbits layer with descriptive name
+                // SVG Group: Orbital Paths Layer
                 beginShape();
                 drawOrbits(centerX, centerY, zoomLevel);
                 endShape();
@@ -638,7 +645,7 @@
             // Layer 2: Asteroid Belt
             if (showAsteroidBelt) {
                 push();
-                // Create asteroid belt layer with descriptive name
+                // SVG Group: Asteroid Belt Layer
                 beginShape();
                 drawAsteroidBelt(centerX, centerY, zoomLevel);
                 endShape();
@@ -652,7 +659,7 @@
                 
                 if (showPlanet) {
                     push();
-                    // Create individual planet layer with descriptive name
+                    // SVG Group: Planet Layer - {planet.name}
                     beginShape();
                     drawPlanetOnly(planet, centerX, centerY, zoomLevel, planetSizeScale);
                     endShape();
@@ -661,6 +668,7 @@
                     // Layer 3.5: Planet Hatching (separate layer for each planet)
                     if (enableHatching) {
                         push();
+                        // SVG Group: Planet Hatching Layer - {planet.name}
                         beginShape();
                         drawPlanetHatching(planet, centerX, centerY, zoomLevel, planetSizeScale, hatchDensity);
                         endShape();
@@ -672,7 +680,7 @@
             // Layer 4: All Labels
             if (showLabels) {
                 push();
-                // Create labels layer with descriptive name
+                // SVG Group: Planet Labels Layer
                 beginShape();
                 drawAllLabels(centerX, centerY, zoomLevel, planetSizeScale);
                 if (showAsteroidBelt) {
@@ -684,6 +692,7 @@
             
             // Layer 5: Date Display
             push();
+            // SVG Group: Date Display Layer
             beginShape();
             drawDateDisplay();
             endShape();
