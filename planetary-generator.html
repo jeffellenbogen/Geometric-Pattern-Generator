@@ -369,6 +369,21 @@
                 <input type="range" id="planetSize" min="0.5" max="5.0" step="0.1" value="1.0" oninput="updateAndDraw()">
             </div>
 
+            <h2>View Panning</h2>
+            <div class="control-group">
+                <label for="panX">Pan Left/Right: <span class="value-display" id="panXValue">0</span></label>
+                <input type="range" id="panX" min="-400" max="400" step="10" value="0" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="panY">Pan Up/Down: <span class="value-display" id="panYValue">0</span></label>
+                <input type="range" id="panY" min="-300" max="300" step="10" value="0" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <button class="btn-secondary" onclick="resetPan()">Reset View to Center</button>
+            </div>
+
             <div class="control-group">
                 <label class="checkbox-label">
                     <input type="checkbox" id="showAsteroidBelt" onchange="updateAndDraw()">
@@ -533,6 +548,8 @@
             document.getElementById('zoomLevelValue').textContent = parseFloat(document.getElementById('zoomLevel').value).toFixed(1);
             document.getElementById('planetSizeValue').textContent = parseFloat(document.getElementById('planetSize').value).toFixed(1);
             document.getElementById('hatchDensityValue').textContent = parseFloat(document.getElementById('hatchDensity').value).toFixed(1);
+            document.getElementById('panXValue').textContent = parseFloat(document.getElementById('panX').value);
+            document.getElementById('panYValue').textContent = parseFloat(document.getElementById('panY').value);
         }
         
         function updatePlanetPositions() {
@@ -587,13 +604,21 @@
             const showLabels = document.getElementById('showLabels').checked;
             const showAsteroidBelt = document.getElementById('showAsteroidBelt').checked;
             
+            // Get pan values
+            const panX = parseFloat(document.getElementById('panX').value);
+            const panY = parseFloat(document.getElementById('panY').value);
+            
+            // Calculate effective center with panning
+            const effectiveCenterX = centerX + panX;
+            const effectiveCenterY = centerY + panY;
+            
             // Set stroke properties for line art
             stroke(0);
             strokeWeight(1);
             noFill();
             
             // Create SVG layers for pen plotting
-            createSVGLayers(centerX, centerY, zoomLevel, planetSizeScale, showOrbits, showLabels, showAsteroidBelt);
+            createSVGLayers(effectiveCenterX, effectiveCenterY, zoomLevel, planetSizeScale, showOrbits, showLabels, showAsteroidBelt);
         }
         
         function createSVGLayers(centerX, centerY, zoomLevel, planetSizeScale, showOrbits, showLabels, showAsteroidBelt) {
@@ -1011,6 +1036,12 @@
             save('solar-system.svg');
         }
         
+        function resetPan() {
+            document.getElementById('panX').value = 0;
+            document.getElementById('panY').value = 0;
+            updateAndDraw();
+        }
+        
         function resetSettings() {
             // Set to current date
             const currentDate = new Date();
@@ -1024,6 +1055,8 @@
             
             document.getElementById('zoomLevel').value = 1.0;
             document.getElementById('planetSize').value = 1.0;
+            document.getElementById('panX').value = 0;
+            document.getElementById('panY').value = 0;
             document.getElementById('showOrbits').checked = true;
             document.getElementById('showLabels').checked = true;
             document.getElementById('showAsteroidBelt').checked = false;
