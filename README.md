@@ -4,6 +4,7 @@ This is an exploration in creating a website that allows a user to control param
 Explorations have included coding via prompting in Claude, Gemini, and eventually Cursor.
 
 Variations so far include...
-**Geometric Pattern Generator (Mandalas made of shapes)
-Wave pattern Generator (Sine, Cosine, Square Wave, etc.)
-Planetary position of our solar system**
+<b>Geometric Pattern Generator (Mandalas made of shapes) </br>
+Wave pattern Generator (Sine, Cosine, Square Wave, etc.) </br>
+Planetary position of our solar system</b>
+
