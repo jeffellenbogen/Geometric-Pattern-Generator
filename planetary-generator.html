@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planetary System Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5.js-svg@1.5.1/dist/p5.svg.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-size: 2.5em;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ddd;
+        }
+        
+        #canvas-holder {
+            display: block;
+        }
+        
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+        }
+        
+        h2 {
+            color: #333;
+            margin: 20px 0 15px 0;
+            font-size: 1.4em;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+            background: #ddd;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            color: #333;
+            font-size: 1em;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #333;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: #ddd;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #ccc;
+        }
+        
+        .value-display {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .planet-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .planet-toggle:last-child {
+            border-bottom: none;
+        }
+        
+        .planet-name {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .planet-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .info-text {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>🪐 Planetary System Generator</h1>
+    <div class="container">
+        <div class="canvas-container">
+            <div id="canvas-holder"></div>
+        </div>
+        <div class="controls">
+            <h2>Time & View</h2>
+            <div class="control-group">
+                <label for="year">Year:</label>
+                <select id="year" onchange="updateAndDraw()">
+                    <option value="2000">2000</option>
+                    <option value="2001">2001</option>
+                    <option value="2002">2002</option>
+                    <option value="2003">2003</option>
+                    <option value="2004">2004</option>
+                    <option value="2005">2005</option>
+                    <option value="2006">2006</option>
+                    <option value="2007">2007</option>
+                    <option value="2008">2008</option>
+                    <option value="2009">2009</option>
+                    <option value="2010">2010</option>
+                    <option value="2011">2011</option>
+                    <option value="2012">2012</option>
+                    <option value="2013">2013</option>
+                    <option value="2014">2014</option>
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025" selected>2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                    <option value="2031">2031</option>
+                    <option value="2032">2032</option>
+                    <option value="2033">2033</option>
+                    <option value="2034">2034</option>
+                    <option value="2035">2035</option>
+                    <option value="2036">2036</option>
+                    <option value="2037">2037</option>
+                    <option value="2038">2038</option>
+                    <option value="2039">2039</option>
+                    <option value="2040">2040</option>
+                    <option value="2041">2041</option>
+                    <option value="2042">2042</option>
+                    <option value="2043">2043</option>
+                    <option value="2044">2044</option>
+                    <option value="2045">2045</option>
+                    <option value="2046">2046</option>
+                    <option value="2047">2047</option>
+                    <option value="2048">2048</option>
+                    <option value="2049">2049</option>
+                    <option value="2050">2050</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="month">Month:</label>
+                <select id="month" onchange="updateAndDraw()">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+            </div>
+
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showOrbits" onchange="updateAndDraw()" checked>
+                    Show Orbital Paths
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showLabels" onchange="updateAndDraw()" checked>
+                    Show Planet Labels
+                </label>
+            </div>
+
+            <h2>Planet Visibility</h2>
+            <div class="control-group">
+                <div class="planet-toggle">
+                    <div style="display: flex; align-items: center;">
+                        <div class="planet-color" style="background: #ffd700;"></div>
+                        <span class="planet-name">Sun</span>
+                    </div>
+                    <input type="checkbox" id="showSun" onchange="updateAndDraw()" checked>
+                </div>
+                
+                <div class="planet-toggle">
+                    <div style="display: flex; align-items: center;">
+                        <div class="planet-color" style="background: #8c7853;"></div>
+                        <span class="planet-name">Mercury</span>
+                    </div>
+                    <input type="checkbox" id="showMercury" onchange="updateAndDraw()" checked>
+                </div>
+                
+                <div class="planet-toggle">
+                    <div style="display: flex; align-items: center;">
+                        <div class="planet-color" style="background: #ffc649;"></div>
+                        <span class="planet-name">Venus</span>
+                    </div>
+                    <input type="checkbox" id="showVenus" onchange="updateAndDraw()" checked>
+                </div>
+                
+                <div class="planet-toggle">
+                    <div style="display: flex; align-items: center;">
+                        <div class="planet-color" style="background: #4a9eff;"></div>
+                        <span class="planet-name">Earth</span>
+                    </div>
+                    <input type="checkbox" id="showEarth" onchange="updateAndDraw()" checked>
+                </div>
+                
+                <div class="planet-toggle">
+                    <div style="display: flex; align-items: center;">
+                        <div class="planet-color" style="background: #cd5c5c;"></div>
+                        <span class="planet-name">Mars</span>
+                    </div>
+                    <input type="checkbox" id="showMars" onchange="updateAndDraw()" checked>
+                </div>
+                
+                <div class="planet-toggle">
+                    <div style="display: flex; align-items: center;">
+                        <div class="planet-color" style="background: #ffa500;"></div>
+                        <span class="planet-name">Jupiter</span>
+                    </div>
+                    <input type="checkbox" id="showJupiter" onchange="updateAndDraw()" checked>
+                </div>
+                
+                <div class="planet-toggle">
+                    <div style="display: flex; align-items: center;">
+                        <div class="planet-color" style="background: #ffd700;"></div>
+                        <span class="planet-name">Saturn</span>
+                    </div>
+                    <input type="checkbox" id="showSaturn" onchange="updateAndDraw()" checked>
+                </div>
+                
+                <div class="planet-toggle">
+                    <div style="display: flex; align-items: center;">
+                        <div class="planet-color" style="background: #4fd0e7;"></div>
+                        <span class="planet-name">Uranus</span>
+                    </div>
+                    <input type="checkbox" id="showUranus" onchange="updateAndDraw()" checked>
+                </div>
+                
+                <div class="planet-toggle">
+                    <div style="display: flex; align-items: center;">
+                        <div class="planet-color" style="background: #4b70dd;"></div>
+                        <span class="planet-name">Neptune</span>
+                    </div>
+                    <input type="checkbox" id="showNeptune" onchange="updateAndDraw()" checked>
+                </div>
+            </div>
+
+            <h2>Display Options</h2>
+            <div class="control-group">
+                <label for="zoomLevel">Zoom Level: <span class="value-display" id="zoomLevelValue">1.0</span></label>
+                <input type="range" id="zoomLevel" min="0.5" max="3.0" step="0.1" value="1.0" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="planetSize">Planet Size Scale: <span class="value-display" id="planetSizeValue">1.0</span></label>
+                <input type="range" id="planetSize" min="0.5" max="5.0" step="0.1" value="1.0" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showAsteroidBelt" onchange="updateAndDraw()">
+                    Show Asteroid Belt
+                </label>
+            </div>
+
+            <h2>Shading & Hatching</h2>
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="enableHatching" onchange="updateAndDraw()">
+                    Enable Planet Hatching
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label for="hatchDensity">Hatch Density: <span class="value-display" id="hatchDensityValue">2.0</span></label>
+                <input type="range" id="hatchDensity" min="0.5" max="5.0" step="0.1" value="2.0" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Export</h2>
+            <button class="btn-primary" onclick="downloadSVG()">Download as SVG</button>
+            <button class="btn-secondary" onclick="resetSettings()">Reset Settings</button>
+            
+            <div class="info-text">
+                <p>This shows a top-down view of our solar system. Planet positions are calculated based on their orbital periods and the selected month.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myCanvas;
+        let timeOffset = 0;
+        let updateTimeout;
+        
+        // Real planetary data (scaled for visualization) with elliptical orbit parameters
+        const planets = {
+            sun: {
+                name: "Sun",
+                radius: 20,
+                distance: 0,
+                period: 0, // Sun doesn't orbit
+                angle: 0,
+                eccentricity: 0, // Circular
+                semiMajorAxis: 0,
+                show: true
+            },
+            mercury: {
+                name: "Mercury",
+                radius: 3,
+                distance: 50,
+                period: 88, // days
+                angle: 0,
+                eccentricity: 0.2056, // Real orbital eccentricity
+                semiMajorAxis: 50,
+                show: true
+            },
+            venus: {
+                name: "Venus",
+                radius: 4,
+                distance: 75,
+                period: 225, // days
+                angle: 0,
+                eccentricity: 0.0067,
+                semiMajorAxis: 75,
+                show: true
+            },
+            earth: {
+                name: "Earth",
+                radius: 4,
+                distance: 100,
+                period: 365, // days
+                angle: 0,
+                eccentricity: 0.0167,
+                semiMajorAxis: 100,
+                show: true
+            },
+            mars: {
+                name: "Mars",
+                radius: 3,
+                distance: 150,
+                period: 687, // days
+                angle: 0,
+                eccentricity: 0.0934,
+                semiMajorAxis: 150,
+                show: true
+            },
+            jupiter: {
+                name: "Jupiter",
+                radius: 12,
+                distance: 250,
+                period: 4333, // days
+                angle: 0,
+                eccentricity: 0.0489,
+                semiMajorAxis: 250,
+                show: true
+            },
+            saturn: {
+                name: "Saturn",
+                radius: 10,
+                distance: 350,
+                period: 10759, // days
+                angle: 0,
+                eccentricity: 0.0565,
+                semiMajorAxis: 350,
+                show: true
+            },
+            uranus: {
+                name: "Uranus",
+                radius: 6,
+                distance: 450,
+                period: 30687, // days
+                angle: 0,
+                eccentricity: 0.0457,
+                semiMajorAxis: 450,
+                show: true
+            },
+            neptune: {
+                name: "Neptune",
+                radius: 6,
+                distance: 550,
+                period: 60190, // days
+                angle: 0,
+                eccentricity: 0.0113,
+                semiMajorAxis: 550,
+                show: true
+            }
+        };
+        
+        function setup() {
+            myCanvas = createCanvas(800, 600, SVG);
+            myCanvas.parent('canvas-holder');
+            noLoop();
+            
+            // Set initial year and month to current date
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth();
+            
+            // Set year (clamp to 2000-2050 range)
+            const yearValue = Math.max(2000, Math.min(2050, currentYear));
+            document.getElementById('year').value = yearValue;
+            document.getElementById('month').value = currentMonth;
+            
+            updateAndDraw();
+        }
+
+        function draw() {
+            drawSolarSystem();
+        }
+        
+        function updateAndDraw() {
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(() => {
+                updateDisplayValues();
+                updatePlanetPositions();
+                redraw();
+            }, 16);
+        }
+        
+        function updateDisplayValues() {
+            document.getElementById('zoomLevelValue').textContent = parseFloat(document.getElementById('zoomLevel').value).toFixed(1);
+            document.getElementById('planetSizeValue').textContent = parseFloat(document.getElementById('planetSize').value).toFixed(1);
+            document.getElementById('hatchDensityValue').textContent = parseFloat(document.getElementById('hatchDensity').value).toFixed(1);
+        }
+        
+        function updatePlanetPositions() {
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value);
+            
+            // Calculate days since January 1, 2000
+            const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+            
+            // Adjust February for leap years
+            if (isLeapYear) {
+                daysInMonth[1] = 29;
+            }
+            
+            // Calculate total days since January 1, 2000
+            let totalDays = 0;
+            
+            // Add days for complete years
+            for (let y = 2000; y < year; y++) {
+                const yearIsLeap = (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+                totalDays += yearIsLeap ? 366 : 365;
+            }
+            
+            // Add days for months in current year
+            for (let i = 0; i < month; i++) {
+                totalDays += daysInMonth[i];
+            }
+            
+            // Add half month to get middle of selected month
+            totalDays += 15;
+            
+            // Update planet positions based on their orbital periods
+            Object.keys(planets).forEach(planetKey => {
+                const planet = planets[planetKey];
+                if (planet.period > 0) {
+                    // Calculate angle based on time and orbital period
+                    const angleProgress = totalDays / planet.period;
+                    planet.angle = (angleProgress * TWO_PI) % TWO_PI;
+                }
+            });
+        }
+        
+        function drawSolarSystem() {
+            background(255);
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const zoomLevel = parseFloat(document.getElementById('zoomLevel').value);
+            const planetSizeScale = parseFloat(document.getElementById('planetSize').value);
+            const showOrbits = document.getElementById('showOrbits').checked;
+            const showLabels = document.getElementById('showLabels').checked;
+            const showAsteroidBelt = document.getElementById('showAsteroidBelt').checked;
+            
+            // Set stroke properties for line art
+            stroke(0);
+            strokeWeight(1);
+            noFill();
+            
+            // Create SVG layers for pen plotting
+            createSVGLayers(centerX, centerY, zoomLevel, planetSizeScale, showOrbits, showLabels, showAsteroidBelt);
+        }
+        
+        function createSVGLayers(centerX, centerY, zoomLevel, planetSizeScale, showOrbits, showLabels, showAsteroidBelt) {
+            const enableHatching = document.getElementById('enableHatching').checked;
+            const hatchDensity = parseFloat(document.getElementById('hatchDensity').value);
+            
+            // Layer 1: Orbital Paths
+            if (showOrbits) {
+                push();
+                // Create orbits layer
+                beginShape();
+                drawOrbits(centerX, centerY, zoomLevel);
+                endShape();
+                pop();
+            }
+            
+            // Layer 2: Asteroid Belt
+            if (showAsteroidBelt) {
+                push();
+                // Create asteroid belt layer
+                beginShape();
+                drawAsteroidBelt(centerX, centerY, zoomLevel);
+                endShape();
+                pop();
+            }
+            
+            // Layer 3: Individual Planets (each on its own layer)
+            Object.keys(planets).forEach(planetKey => {
+                const planet = planets[planetKey];
+                const showPlanet = document.getElementById(`show${planetKey.charAt(0).toUpperCase() + planetKey.slice(1)}`).checked;
+                
+                if (showPlanet) {
+                    push();
+                    // Create individual planet layer
+                    beginShape();
+                    drawPlanetOnly(planet, centerX, centerY, zoomLevel, planetSizeScale);
+                    endShape();
+                    pop();
+                    
+                    // Layer 3.5: Planet Hatching (separate layer for each planet)
+                    if (enableHatching) {
+                        push();
+                        beginShape();
+                        drawPlanetHatching(planet, centerX, centerY, zoomLevel, planetSizeScale, hatchDensity);
+                        endShape();
+                        pop();
+                    }
+                }
+            });
+            
+            // Layer 4: All Labels
+            if (showLabels) {
+                push();
+                // Create labels layer
+                beginShape();
+                drawAllLabels(centerX, centerY, zoomLevel, planetSizeScale);
+                if (showAsteroidBelt) {
+                    drawAsteroidBeltLabel(centerX, centerY, zoomLevel);
+                }
+                endShape();
+                pop();
+            }
+        }
+        
+        function drawOrbits(centerX, centerY, zoomLevel) {
+            stroke(0);
+            strokeWeight(0.5);
+            noFill();
+            
+            Object.keys(planets).forEach(planetKey => {
+                const planet = planets[planetKey];
+                if (planet.distance > 0) {
+                    drawEllipticalOrbit(planet, centerX, centerY, zoomLevel);
+                }
+            });
+        }
+        
+        function drawEllipticalOrbit(planet, centerX, centerY, zoomLevel) {
+            const a = planet.semiMajorAxis * zoomLevel; // Semi-major axis
+            const e = planet.eccentricity; // Eccentricity
+            const b = a * Math.sqrt(1 - e * e); // Semi-minor axis
+            const c = a * e; // Distance from center to focus
+            
+            // Draw elliptical orbit using parametric equations
+            beginShape();
+            noFill();
+            for (let angle = 0; angle < TWO_PI; angle += 0.1) {
+                const r = a * (1 - e * e) / (1 + e * cos(angle));
+                const x = centerX + c + r * cos(angle);
+                const y = centerY + r * sin(angle);
+                vertex(x, y);
+            }
+            endShape(CLOSE);
+        }
+        
+        function drawAsteroidBelt(centerX, centerY, zoomLevel) {
+            stroke(0);
+            strokeWeight(0.5);
+            noFill();
+            
+            // Draw asteroid belt between Mars and Jupiter
+            const innerRadius = 180 * zoomLevel;
+            const outerRadius = 220 * zoomLevel;
+            
+            // Draw the belt boundaries
+            ellipse(centerX, centerY, innerRadius * 2, innerRadius * 2);
+            ellipse(centerX, centerY, outerRadius * 2, outerRadius * 2);
+            
+            // Draw a more obvious asteroid belt representation
+            stroke(0);
+            strokeWeight(0.3);
+            
+            // Draw many small asteroids with varying sizes
+            for (let i = 0; i < 120; i++) {
+                const angle = random(TWO_PI);
+                const radius = random(innerRadius, outerRadius);
+                const x = centerX + cos(angle) * radius;
+                const y = centerY + sin(angle) * radius;
+                
+                // Vary asteroid sizes slightly
+                const asteroidSize = random(0.5, 2.0);
+                strokeWeight(asteroidSize);
+                point(x, y);
+            }
+            
+            // Draw some larger "asteroids" as small circles
+            stroke(0);
+            strokeWeight(0.5);
+            noFill();
+            for (let i = 0; i < 15; i++) {
+                const angle = random(TWO_PI);
+                const radius = random(innerRadius, outerRadius);
+                const x = centerX + cos(angle) * radius;
+                const y = centerY + sin(angle) * radius;
+                const size = random(1.5, 3.0);
+                ellipse(x, y, size, size);
+            }
+        }
+        
+        function drawAsteroidBeltLabel(centerX, centerY, zoomLevel) {
+            const innerRadius = 180 * zoomLevel;
+            const outerRadius = 220 * zoomLevel;
+            const middleRadius = (innerRadius + outerRadius) / 2;
+            
+            // Add label for asteroid belt
+            fill(0);
+            noStroke();
+            textAlign(CENTER);
+            textSize(10);
+            text("Asteroid Belt", centerX, centerY + middleRadius + 20);
+        }
+        
+        function drawPlanet(planet, centerX, centerY, zoomLevel, planetSizeScale, showLabels) {
+            let x, y;
+            
+            if (planet.distance === 0) {
+                // Sun at center
+                x = centerX;
+                y = centerY;
+            } else {
+                // Calculate planet position on elliptical orbit using same math as orbit drawing
+                const a = planet.semiMajorAxis * zoomLevel;
+                const e = planet.eccentricity;
+                const c = a * e; // Distance from center to focus
+                
+                // Calculate position on ellipse using polar coordinates
+                const r = a * (1 - e * e) / (1 + e * cos(planet.angle));
+                x = centerX + c + r * cos(planet.angle);
+                y = centerY + r * sin(planet.angle);
+            }
+            
+            // Draw planet as outlined circle
+            stroke(0);
+            strokeWeight(1);
+            noFill();
+            const size = planet.radius * planetSizeScale * zoomLevel;
+            ellipse(x, y, size, size);
+            
+            // Draw Saturn's rings
+            if (planet.name === "Saturn") {
+                stroke(0);
+                strokeWeight(1);
+                noFill();
+                ellipse(x, y, size * 1.8, size * 1.8);
+                ellipse(x, y, size * 2.2, size * 2.2);
+            }
+            
+            // Draw label
+            if (showLabels) {
+                fill(0);
+                noStroke();
+                textAlign(CENTER);
+                textSize(12);
+                
+                // Calculate label position to maintain consistent distance from planet edge
+                let labelOffset;
+                if (planet.name === "Saturn") {
+                    // For Saturn, position label outside the rings
+                    labelOffset = (size * 2.2 / 2) + 12; // Outside the outer ring
+                } else {
+                    // For other planets, position label 5% farther from planet edge
+                    labelOffset = (size / 2) * 1.05 + 8; // 5% farther than before
+                }
+                const labelY = y + labelOffset;
+                text(planet.name, x, labelY);
+            }
+        }
+        
+        function drawPlanetOnly(planet, centerX, centerY, zoomLevel, planetSizeScale) {
+            let x, y;
+            
+            if (planet.distance === 0) {
+                // Sun at center
+                x = centerX;
+                y = centerY;
+            } else {
+                // Calculate planet position on elliptical orbit using same math as orbit drawing
+                const a = planet.semiMajorAxis * zoomLevel;
+                const e = planet.eccentricity;
+                const c = a * e; // Distance from center to focus
+                
+                // Calculate position on ellipse using polar coordinates
+                const r = a * (1 - e * e) / (1 + e * cos(planet.angle));
+                x = centerX + c + r * cos(planet.angle);
+                y = centerY + r * sin(planet.angle);
+            }
+            
+            // Draw planet as outlined circle
+            stroke(0);
+            strokeWeight(1);
+            noFill();
+            const size = planet.radius * planetSizeScale * zoomLevel;
+            ellipse(x, y, size, size);
+            
+            // Draw Saturn's rings
+            if (planet.name === "Saturn") {
+                stroke(0);
+                strokeWeight(1);
+                noFill();
+                ellipse(x, y, size * 1.8, size * 1.8);
+                ellipse(x, y, size * 2.2, size * 2.2);
+            }
+        }
+        
+        function drawAllLabels(centerX, centerY, zoomLevel, planetSizeScale) {
+            fill(0);
+            noStroke();
+            textAlign(CENTER);
+            textSize(12);
+            
+            Object.keys(planets).forEach(planetKey => {
+                const planet = planets[planetKey];
+                const showPlanet = document.getElementById(`show${planetKey.charAt(0).toUpperCase() + planetKey.slice(1)}`).checked;
+                
+                if (showPlanet) {
+                    let x, y;
+                    
+                    if (planet.distance === 0) {
+                        // Sun at center
+                        x = centerX;
+                        y = centerY;
+                    } else {
+                        // Calculate planet position on elliptical orbit using same math as orbit drawing
+                        const a = planet.semiMajorAxis * zoomLevel;
+                        const e = planet.eccentricity;
+                        const c = a * e; // Distance from center to focus
+                        
+                        // Calculate position on ellipse using polar coordinates
+                        const r = a * (1 - e * e) / (1 + e * cos(planet.angle));
+                        x = centerX + c + r * cos(planet.angle);
+                        y = centerY + r * sin(planet.angle);
+                    }
+                    
+                    // Calculate label position to maintain consistent distance from planet edge
+                    const size = planet.radius * planetSizeScale * zoomLevel;
+                    let labelOffset;
+                    if (planet.name === "Saturn") {
+                        // For Saturn, position label outside the rings
+                        labelOffset = (size * 2.2 / 2) + 12; // Outside the outer ring
+                    } else {
+                        // For other planets, position label 5% farther from planet edge
+                        labelOffset = (size / 2) * 1.05 + 8; // 5% farther than before
+                    }
+                    const labelY = y + labelOffset;
+                    text(planet.name, x, labelY);
+                }
+            });
+        }
+        
+        function drawPlanetHatching(planet, centerX, centerY, zoomLevel, planetSizeScale, hatchDensity) {
+            let x, y;
+            
+            if (planet.distance === 0) {
+                // Sun at center
+                x = centerX;
+                y = centerY;
+            } else {
+                // Calculate planet position on elliptical orbit using same math as orbit drawing
+                const a = planet.semiMajorAxis * zoomLevel;
+                const e = planet.eccentricity;
+                const c = a * e; // Distance from center to focus
+                
+                // Calculate position on ellipse using polar coordinates
+                const r = a * (1 - e * e) / (1 + e * cos(planet.angle));
+                x = centerX + c + r * cos(planet.angle);
+                y = centerY + r * sin(planet.angle);
+            }
+            
+            const size = planet.radius * planetSizeScale * zoomLevel;
+            const radius = size / 2;
+            
+            // Set random angle for this planet (consistent per planet)
+            randomSeed(planet.name.charCodeAt(0) * 1000);
+            const baseAngle = random(0, PI / 4); // Random angle between 0 and 45 degrees
+            
+            stroke(0);
+            strokeWeight(0.3);
+            noFill();
+            
+            if (planet.name === "Saturn") {
+                // Special hatching for Saturn: planet + ring space, but not between inner ring and planet
+                const innerRingRadius = radius * 1.8;
+                const outerRingRadius = radius * 2.2;
+                
+                // Hatch the planet itself
+                drawHatchingLines(x, y, radius, baseAngle, hatchDensity);
+                
+                // Hatch the ring space (between inner and outer rings)
+                drawRingHatching(x, y, innerRingRadius, outerRingRadius, baseAngle, hatchDensity);
+            } else {
+                // Regular hatching for other planets
+                drawHatchingLines(x, y, radius, baseAngle, hatchDensity);
+            }
+        }
+        
+        function drawHatchingLines(centerX, centerY, radius, angle, density) {
+            const spacing = 3 / density; // Smaller spacing = denser hatching
+            const diameter = radius * 2;
+            
+            // Calculate bounding box for hatching
+            const cosAngle = cos(angle);
+            const sinAngle = sin(angle);
+            
+            // Draw parallel lines across the circle
+            for (let offset = -diameter; offset <= diameter; offset += spacing) {
+                // Calculate line endpoints
+                const perpX = -sinAngle * offset;
+                const perpY = cosAngle * offset;
+                
+                // Find intersection points with circle
+                const discriminant = radius * radius - offset * offset;
+                if (discriminant >= 0) {
+                    const halfLength = sqrt(discriminant);
+                    
+                    const x1 = centerX + cosAngle * halfLength + perpX;
+                    const y1 = centerY + sinAngle * halfLength + perpY;
+                    const x2 = centerX - cosAngle * halfLength + perpX;
+                    const y2 = centerY - sinAngle * halfLength + perpY;
+                    
+                    line(x1, y1, x2, y2);
+                }
+            }
+        }
+        
+        function drawRingHatching(centerX, centerY, innerRadius, outerRadius, angle, density) {
+            const spacing = 3 / density;
+            const diameter = outerRadius * 2;
+            
+            const cosAngle = cos(angle);
+            const sinAngle = sin(angle);
+            
+            // Draw parallel lines across the ring area
+            for (let offset = -diameter; offset <= diameter; offset += spacing) {
+                const perpX = -sinAngle * offset;
+                const perpY = cosAngle * offset;
+                
+                // Check if line intersects with outer ring
+                const outerDiscriminant = outerRadius * outerRadius - offset * offset;
+                if (outerDiscriminant >= 0) {
+                    const outerHalfLength = sqrt(outerDiscriminant);
+                    
+                    // Check if line intersects with inner ring
+                    const innerDiscriminant = innerRadius * innerRadius - offset * offset;
+                    
+                    if (innerDiscriminant >= 0) {
+                        // Line intersects both rings - draw two segments
+                        const innerHalfLength = sqrt(innerDiscriminant);
+                        
+                        // First segment: from inner ring to outer ring (positive side)
+                        const x1 = centerX + cosAngle * innerHalfLength + perpX;
+                        const y1 = centerY + sinAngle * innerHalfLength + perpY;
+                        const x2 = centerX + cosAngle * outerHalfLength + perpX;
+                        const y2 = centerY + sinAngle * outerHalfLength + perpY;
+                        line(x1, y1, x2, y2);
+                        
+                        // Second segment: from inner ring to outer ring (negative side)
+                        const x3 = centerX - cosAngle * innerHalfLength + perpX;
+                        const y3 = centerY - sinAngle * innerHalfLength + perpY;
+                        const x4 = centerX - cosAngle * outerHalfLength + perpX;
+                        const y4 = centerY - sinAngle * outerHalfLength + perpY;
+                        line(x3, y3, x4, y4);
+                    } else {
+                        // Line only intersects outer ring - draw full diameter across ring
+                        const x1 = centerX + cosAngle * outerHalfLength + perpX;
+                        const y1 = centerY + sinAngle * outerHalfLength + perpY;
+                        const x2 = centerX - cosAngle * outerHalfLength + perpX;
+                        const y2 = centerY - sinAngle * outerHalfLength + perpY;
+                        line(x1, y1, x2, y2);
+                    }
+                }
+            }
+        }
+        
+        function downloadSVG() {
+            save('solar-system.svg');
+        }
+        
+        function resetSettings() {
+            // Set to current date
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth();
+            
+            // Clamp year to 2000-2050 range
+            const yearValue = Math.max(2000, Math.min(2050, currentYear));
+            document.getElementById('year').value = yearValue;
+            document.getElementById('month').value = currentMonth;
+            
+            document.getElementById('zoomLevel').value = 1.0;
+            document.getElementById('planetSize').value = 1.0;
+            document.getElementById('showOrbits').checked = true;
+            document.getElementById('showLabels').checked = true;
+            document.getElementById('showAsteroidBelt').checked = false;
+            document.getElementById('enableHatching').checked = false;
+            document.getElementById('hatchDensity').value = 2.0;
+            
+            // Reset all planet visibility
+            Object.keys(planets).forEach(planetKey => {
+                document.getElementById(`show${planetKey.charAt(0).toUpperCase() + planetKey.slice(1)}`).checked = true;
+            });
+            
+            updateAndDraw();
+        }
+    </script>
+</body>
+</html>

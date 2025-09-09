@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Pattern Generator</title>
+    <!-- Use a p5.js version known to be compatible with the SVG library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <!-- Added p5.svg.js library for perfect SVG export -->
+    <script src="https://cdn.jsdelivr.net/npm/p5.js-svg@1.5.1/dist/p5.svg.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            flex: 1;
+            min-width: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #canvas-holder {
+            display: block;
+        }
+        
+        .controls {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 350px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        h2 {
+            color: #764ba2;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .value-display {
+            color: #764ba2;
+            font-weight: 600;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            color: #333;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Geometric Pattern Generator for Pen Plotting</h1>
+    <div class="container">
+        <div class="canvas-container">
+            <div id="canvas-holder"></div>
+        </div>
+        <div class="controls">
+            <h2>Shape Settings</h2>
+            <div class="control-group">
+                <label for="shapeType">Shape Type:</label>
+                <select id="shapeType" onchange="updateAndDraw()">
+                    <option value="rectangle">Rectangle</option>
+                    <option value="square">Square</option>
+                    <option value="triangle">Triangle</option>
+                    <option value="polygon">Polygon</option>
+                    <option value="star">Star</option>
+                    <option value="circle">Circle</option>
+                    <option value="spiral">Spiral</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="numShapes">Number of Shapes: <span class="value-display" id="numShapesValue">12</span></label>
+                <input type="range" id="numShapes" min="1" max="50" value="12" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="shapeSize">Shape Size: <span class="value-display" id="shapeSizeValue">50</span></label>
+                <input type="range" id="shapeSize" min="10" max="200" value="50" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Rotation & Position</h2>
+            <div class="control-group">
+                <label for="rotationAngle">Rotation Angle: <span class="value-display" id="rotationAngleValue">30</span>°</label>
+                <input type="range" id="rotationAngle" min="0" max="360" value="30" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="rotationRadius">Rotation Radius: <span class="value-display" id="rotationRadiusValue">100</span></label>
+                <input type="range" id="rotationRadius" min="0" max="300" value="100" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="centerX">Center X: <span class="value-display" id="centerXValue">400</span></label>
+                <input type="range" id="centerX" min="0" max="800" value="400" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="centerY">Center Y: <span class="value-display" id="centerYValue">300</span></label>
+                <input type="range" id="centerY" min="0" max="600" value="300" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Advanced Options</h2>
+            <div class="control-group">
+                <label for="polygonSides">Polygon Sides: <span class="value-display" id="polygonSidesValue">6</span></label>
+                <input type="range" id="polygonSides" min="3" max="12" value="6" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="starPoints">Star Points: <span class="value-display" id="starPointsValue">5</span></label>
+                <input type="range" id="starPoints" min="3" max="12" value="5" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="innerRadius">Star Inner Radius: <span class="value-display" id="innerRadiusValue">25</span></label>
+                <input type="range" id="innerRadius" min="10" max="100" value="25" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="rotateIndividual" onchange="updateAndDraw()">
+                    Rotate Individual Shapes
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="scaleShapes" onchange="updateAndDraw()">
+                    Scale Shapes Progressively
+                </label>
+            </div>
+
+            <h2>Export</h2>
+            <button class="btn-primary" onclick="downloadSVG()">Download as SVG</button>
+            <button class="btn-secondary" onclick="resetSettings()">Reset Settings</button>
+        </div>
+    </div>
+
+    <script>
+        let myCanvas;
+        
+        function setup() {
+            // Use the SVG renderer instead of the default canvas renderer
+            myCanvas = createCanvas(800, 600, SVG);
+            myCanvas.parent('canvas-holder');
+            noFill();
+            stroke(0);
+            strokeWeight(1.5);
+            noLoop(); // Prevent the draw loop from running continuously
+            
+            // Update display values on start and draw initial pattern
+            updateAndDraw();
+        }
+
+        function draw() {
+            // The main draw function, which is called once after setup and then by redraw()
+            drawPattern();
+        }
+        
+        function updateAndDraw() {
+            // This function is called by the HTML controls
+            updateDisplayValues();
+            redraw(); // Tell p5.js to run the draw() function once
+        }
+        
+        function updateDisplayValues() {
+            // Update all the text values next to the sliders
+            document.getElementById('numShapesValue').textContent = document.getElementById('numShapes').value;
+            document.getElementById('shapeSizeValue').textContent = document.getElementById('shapeSize').value;
+            document.getElementById('rotationAngleValue').textContent = document.getElementById('rotationAngle').value;
+            document.getElementById('rotationRadiusValue').textContent = document.getElementById('rotationRadius').value;
+            document.getElementById('centerXValue').textContent = document.getElementById('centerX').value;
+            document.getElementById('centerYValue').textContent = document.getElementById('centerY').value;
+            document.getElementById('polygonSidesValue').textContent = document.getElementById('polygonSides').value;
+            document.getElementById('starPointsValue').textContent = document.getElementById('starPoints').value;
+            document.getElementById('innerRadiusValue').textContent = document.getElementById('innerRadius').value;
+        }
+        
+        // This function draws the pattern to the SVG canvas
+        function drawPattern() {
+            // Clear canvas
+            background(255);
+            
+            // Get current parameters
+            const shapeType = document.getElementById('shapeType').value;
+            const numShapes = parseInt(document.getElementById('numShapes').value);
+            const shapeSize = parseInt(document.getElementById('shapeSize').value);
+            const rotationAngle = parseInt(document.getElementById('rotationAngle').value);
+            const rotationRadius = parseInt(document.getElementById('rotationRadius').value);
+            const centerX = parseInt(document.getElementById('centerX').value);
+            const centerY = parseInt(document.getElementById('centerY').value);
+            const polygonSides = parseInt(document.getElementById('polygonSides').value);
+            const starPoints = parseInt(document.getElementById('starPoints').value);
+            const innerRadius = parseInt(document.getElementById('innerRadius').value);
+            const rotateIndividual = document.getElementById('rotateIndividual').checked;
+            const scaleShapes = document.getElementById('scaleShapes').checked;
+            
+            push();
+            translate(centerX, centerY);
+            
+            for (let i = 0; i < numShapes; i++) {
+                push();
+                
+                // Rotate around center
+                const baseAngle = (TWO_PI / numShapes) * i;
+                rotate(baseAngle);
+                
+                // Move to radius
+                translate(rotationRadius, 0);
+                
+                // Individual rotation
+                if (rotateIndividual) {
+                    rotate(radians(rotationAngle * i));
+                }
+                
+                // Progressive scaling
+                if (scaleShapes && numShapes > 1) {
+                    const scaleFactor = map(i, 0, numShapes - 1, 0.5, 1.5);
+                    scale(scaleFactor);
+                } else if (scaleShapes && numShapes === 1) {
+                    scale(0.5);
+                }
+                
+                // Draw the shape
+                drawShape(shapeType, shapeSize, polygonSides, starPoints, innerRadius);
+                
+                pop();
+            }
+            
+            pop();
+        }
+        
+        function drawShape(type, size, sides, points, inner) {
+            switch(type) {
+                case 'rectangle':
+                    rectMode(CENTER);
+                    rect(0, 0, size * 1.5, size);
+                    break;
+                    
+                case 'square':
+                    rectMode(CENTER);
+                    rect(0, 0, size, size);
+                    break;
+                    
+                case 'circle':
+                    ellipse(0, 0, size, size);
+                    break;
+                    
+                case 'triangle':
+                    drawPolygon(3, size);
+                    break;
+                    
+                case 'polygon':
+                    drawPolygon(sides, size);
+                    break;
+                    
+                case 'star':
+                    drawStar(points, size, inner);
+                    break;
+                    
+                case 'spiral':
+                    drawSpiral(size);
+                    break;
+            }
+        }
+        
+        function drawPolygon(n, radius) {
+            beginShape();
+            for (let i = 0; i < n; i++) {
+                const angle = (TWO_PI / n) * i - HALF_PI;
+                const x = cos(angle) * radius;
+                const y = sin(angle) * radius;
+                vertex(x, y);
+            }
+            endShape(CLOSE);
+        }
+        
+        function drawStar(n, outerRadius, innerRadius) {
+            beginShape();
+            for (let i = 0; i < n * 2; i++) {
+                const angle = (PI / n) * i - HALF_PI;
+                const radius = (i % 2 === 0) ? outerRadius : innerRadius;
+                const x = cos(angle) * radius;
+                const y = sin(angle) * radius;
+                vertex(x, y);
+            }
+            endShape(CLOSE);
+        }
+        
+        function drawSpiral(size) {
+            beginShape();
+            for (let t = 0; t < TWO_PI * 3; t += 0.1) {
+                const r = (size / (TWO_PI * 3)) * t;
+                const x = cos(t) * r;
+                const y = sin(t) * r;
+                vertex(x, y);
+            }
+            endShape();
+        }
+        
+        // --- SIMPLIFIED SVG EXPORT ---
+        // The p5.svg.js library overloads the save() function to handle SVG export automatically.
+        // The old, manual SVG generation functions are no longer needed.
+        function downloadSVG() {
+            save('geometric-pattern.svg');
+        }
+        
+        function resetSettings() {
+            document.getElementById('shapeType').value = 'rectangle';
+            document.getElementById('numShapes').value = 12;
+            document.getElementById('shapeSize').value = 50;
+            document.getElementById('rotationAngle').value = 30;
+            document.getElementById('rotationRadius').value = 100;
+            document.getElementById('centerX').value = 400;
+            document.getElementById('centerY').value = 300;
+            document.getElementById('polygonSides').value = 6;
+            document.getElementById('starPoints').value = 5;
+            document.getElementById('innerRadius').value = 25;
+            document.getElementById('rotateIndividual').checked = false;
+            document.getElementById('scaleShapes').checked = false;
+            
+            updateAndDraw();
+        }
+    </script>
+</body>
+</html>
+
