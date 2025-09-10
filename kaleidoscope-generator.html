@@ -412,28 +412,43 @@
         }
         
         function getShapeColor(index) {
-            const colorMode = document.getElementById('colorMode').value;
+            const colorModeValue = document.getElementById('colorMode').value;
             const hue = (index * 360 / parseInt(document.getElementById('shapeCount').value)) % 360;
             
-            switch (colorMode) {
+            colorMode(HSL);
+            let shapeColor;
+            
+            switch (colorModeValue) {
                 case 'rainbow':
-                    return color(hue, 80, 80);
+                    shapeColor = color(hue, 80, 80);
+                    break;
                 case 'monochrome':
-                    return color(0, 0, random(20, 80));
+                    colorMode(RGB);
+                    shapeColor = color(random(20, 80), random(20, 80), random(20, 80));
+                    colorMode(HSL);
+                    break;
                 case 'complementary':
-                    return color(hue, 80, 80);
+                    shapeColor = color(hue, 80, 80);
+                    break;
                 case 'triadic':
-                    return color((hue + 120) % 360, 80, 80);
+                    shapeColor = color((hue + 120) % 360, 80, 80);
+                    break;
                 case 'custom':
+                    colorMode(RGB);
                     const colors = [
                         document.getElementById('color1').value,
                         document.getElementById('color2').value,
                         document.getElementById('color3').value
                     ];
-                    return color(colors[index % colors.length]);
+                    shapeColor = color(colors[index % colors.length]);
+                    colorMode(HSL);
+                    break;
                 default:
-                    return color(hue, 80, 80);
+                    shapeColor = color(hue, 80, 80);
             }
+            
+            colorMode(RGB);
+            return shapeColor;
         }
         
         function drawShapeInSegment(shape, opacity, enableHatching, hatchDensity, showOutlines) {

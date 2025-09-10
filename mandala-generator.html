@@ -537,59 +537,59 @@
             
             switch (colorScheme) {
                 case 'spring':
-                    // Spring: Fresh greens, pastel pinks, soft yellows, lavender, mint
+                    // Spring: Pure pastels - soft, delicate, and light
+                    colorMode(HSL);
                     const springColors = [
-                        color(120, 70, 85),  // Fresh green
-                        color(320, 40, 90),  // Soft pink
-                        color(60, 50, 90),   // Light yellow
-                        color(280, 30, 85),  // Lavender
-                        color(150, 50, 80),  // Mint green
-                        color(30, 60, 85),   // Peach
-                        color(200, 40, 90),  // Sky blue
-                        color(100, 60, 75)   // Sage green
+                        color(120, 40, 95),  // Light mint
+                        color(300, 30, 90),  // Pale lavender
+                        color(60, 50, 95),   // Cream yellow
+                        color(320, 40, 90),  // Baby pink
+                        color(150, 30, 90),  // Pale aqua
+                        color(30, 40, 90)    // Peach
                     ];
+                    colorMode(RGB);
                     return springColors[(layer + element) % springColors.length];
                     
                 case 'summer':
-                    // Summer: Vibrant blues, bright oranges, sunny yellows, coral, turquoise
+                    // Summer: Neon brights - electric and intense
+                    colorMode(HSL);
                     const summerColors = [
-                        color(200, 80, 70),  // Ocean blue
-                        color(30, 90, 80),   // Bright orange
-                        color(50, 95, 85),   // Sunny yellow
-                        color(15, 70, 85),   // Coral
-                        color(180, 70, 75),  // Turquoise
-                        color(280, 60, 80),  // Hot pink
-                        color(120, 80, 70),  // Lime green
-                        color(240, 50, 90)   // Light purple
+                        color(200, 100, 50),  // Neon cyan
+                        color(15, 100, 60),   // Neon orange
+                        color(60, 100, 70),   // Neon yellow
+                        color(320, 100, 60),  // Neon magenta
+                        color(120, 100, 50),  // Neon green
+                        color(0, 100, 50)     // Neon red
                     ];
+                    colorMode(RGB);
                     return summerColors[(layer + element) % summerColors.length];
                     
                 case 'autumn':
-                    // Autumn: Rich oranges, deep reds, golden yellows, browns, burgundy
+                    // Autumn: Deep earth tones - rich, dark, and warm
+                    colorMode(HSL);
                     const autumnColors = [
-                        color(25, 85, 70),   // Deep orange
-                        color(0, 80, 60),    // Crimson red
-                        color(45, 90, 75),   // Golden yellow
-                        color(30, 60, 50),   // Burnt orange
-                        color(15, 70, 40),   // Dark red
-                        color(60, 70, 60),   // Mustard
-                        color(20, 50, 35),   // Brown
-                        color(340, 60, 50)   // Burgundy
+                        color(25, 80, 40),   // Dark orange
+                        color(0, 70, 35),    // Deep red
+                        color(45, 70, 45),   // Dark gold
+                        color(15, 60, 25),   // Burnt sienna
+                        color(0, 60, 20),    // Dark maroon
+                        color(30, 60, 30)    // Dark rust
                     ];
+                    colorMode(RGB);
                     return autumnColors[(layer + element) % autumnColors.length];
                     
                 case 'winter':
-                    // Winter: Cool blues, icy whites, deep purples, silver, frosty greens
+                    // Winter: Monochromatic cool tones - icy and stark
+                    colorMode(HSL);
                     const winterColors = [
-                        color(220, 60, 80),  // Ice blue
-                        color(0, 0, 95),     // Pure white
-                        color(270, 50, 70),  // Deep purple
-                        color(200, 30, 90),  // Light blue
-                        color(240, 20, 85),  // Silver
-                        color(180, 40, 60),  // Steel blue
-                        color(300, 30, 60),  // Plum
-                        color(160, 50, 70)   // Frost green
+                        color(200, 20, 95),  // Pure white
+                        color(200, 10, 90),  // Off-white
+                        color(220, 30, 85),  // Ice blue
+                        color(240, 20, 80),  // Silver
+                        color(200, 40, 70),  // Steel blue
+                        color(220, 50, 60)   // Deep ice
                     ];
+                    colorMode(RGB);
                     return winterColors[(layer + element) % winterColors.length];
                     
                 case 'custom':
