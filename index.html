@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geometric Pattern Generator Collection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,8 +15,8 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3d0a 0%, #2d6b2d 30%, #4a9d4a 70%, #6bb86b 100%);
             min-height: 100vh;
             padding: 20px;
             color: #333;
@@ -72,7 +75,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #1a3d0a, #2d6b2d, #4a9d4a, #6bb86b);
         }
         
         .project-title {
@@ -115,13 +118,13 @@
             content: "•";
             position: absolute;
             left: 0;
-            color: #667eea;
+            color: #2d6b2d;
             font-weight: bold;
         }
         
         .project-link {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a3d0a 0%, #2d6b2d 30%, #4a9d4a 70%, #6bb86b 100%);
             color: white;
             text-decoration: none;
             padding: 10px 20px;
@@ -137,7 +140,7 @@
         
         .project-link:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(45, 107, 45, 0.5);
         }
         
         .footer {
@@ -168,7 +171,7 @@
     <div class="container">
         <div class="header">
             <h1>🎨 Geometric Pattern Generator Collection</h1>
-            <p>Interactive web applications for creating beautiful geometric patterns and visualizations</p>
+            <p>Interactive web applications for creating beautiful geometric patterns and visualizations that can be exported as SVG files for pen plotting</p>
         </div>
         
         <div id="loading" class="loading">
@@ -188,9 +191,9 @@
         // Project configurations with AI-generated descriptions
         const projectConfigs = {
             'planetary-generator.html': {
-                title: '🪐 Planetary System Generator',
+                title: '🪐 Planetary Generator',
                 icon: '🪐',
-                description: 'An interactive solar system visualization tool that displays accurate planetary positions based on real orbital mechanics. Features elliptical orbits, time-based positioning, and detailed planet rendering with Saturn\'s rings.',
+                description: 'Interactive solar system visualization with accurate planetary positions and orbital mechanics. Features elliptical orbits, time-based positioning, and detailed planet rendering with Saturn\'s rings.',
                 features: [
                     'Real-time planetary position calculations',
                     'Elliptical orbit rendering with accurate eccentricity',
@@ -203,9 +206,9 @@
                 ]
             },
             'wave-pattern-generator.html': {
-                title: '🌊 Wave Pattern Generator',
+                title: '🌊 Wave Generator',
                 icon: '🌊',
-                description: 'A sophisticated wave pattern creation tool that generates beautiful, mathematically precise wave visualizations. Perfect for creating artistic patterns, scientific visualizations, and decorative designs.',
+                description: 'Sophisticated wave pattern creation tool with mathematically precise visualizations. Perfect for artistic patterns, scientific visualizations, and decorative designs with customizable properties.',
                 features: [
                     'Multiple wave types and algorithms',
                     'Real-time parameter adjustment',
@@ -218,9 +221,9 @@
                 ]
             },
             'geometric-pattern-generator-Gemini-090425.html': {
-                title: '🔷 Geometric Pattern Generator',
+                title: '🔷 Geometric Generator',
                 icon: '🔷',
-                description: 'An advanced geometric pattern creation system that generates intricate, mathematically-based patterns using various geometric principles. Ideal for creating tessellations, fractals, and complex geometric art.',
+                description: 'Advanced geometric pattern creation system with intricate, mathematically-based patterns using geometric principles. Ideal for tessellations, fractals, and complex geometric art generation.',
                 features: [
                     'Multiple geometric pattern algorithms',
                     'Real-time pattern generation',
@@ -233,9 +236,9 @@
                 ]
             },
             'kaleidoscope-generator.html': {
-                title: '🔮 Kaleidoscope Generator',
+                title: '🔮 Kaleidoscope',
                 icon: '🔮',
-                description: 'A mesmerizing kaleidoscope pattern generator that creates beautiful symmetrical designs using geometric shapes. Features adjustable symmetry, multiple shape types, color schemes, and hatching options for artistic rendering.',
+                description: 'Mesmerizing kaleidoscope pattern generator creating beautiful symmetrical designs with geometric shapes. Features adjustable symmetry, multiple shapes, color schemes, and hatching.',
                 features: [
                     'Adjustable symmetry segments (3-24)',
                     'Multiple geometric shape types',
@@ -248,9 +251,9 @@
                 ]
             },
             'mandala-generator.html': {
-                title: '🕉️ Mandala Creator',
+                title: '🕉️ Mandala',
                 icon: '🕉️',
-                description: 'Create beautiful mandala patterns with radial symmetry and spiritual designs. Features multiple pattern types, layer controls, color schemes, and gradient fills for artistic mandala creation.',
+                description: 'Beautiful mandala pattern creator with radial symmetry and spiritual designs. Features multiple pattern types, layer controls, color schemes, and gradient fills for artistic creation.',
                 features: [
                     'Radial symmetry with 4-64 segments',
                     'Multiple pattern types (geometric, floral, spiral)',
