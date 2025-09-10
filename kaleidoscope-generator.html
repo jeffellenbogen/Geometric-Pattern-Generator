@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaleidoscope Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5.js-svg@1.5.1/dist/p5.svg.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-size: 2.5em;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ddd;
+        }
+        
+        #canvas-holder {
+            display: block;
+        }
+        
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+        }
+        
+        h2 {
+            color: #333;
+            margin: 20px 0 15px 0;
+            font-size: 1.4em;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+            background: #ddd;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            color: #333;
+            font-size: 1em;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #333;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: #ddd;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #ccc;
+        }
+        
+        .value-display {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .color-input {
+            width: 100%;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .info-text {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔮 Kaleidoscope Generator</h1>
+    <div class="container">
+        <div class="canvas-container">
+            <div id="canvas-holder"></div>
+        </div>
+        <div class="controls">
+            <h2>Symmetry & Pattern</h2>
+            <div class="control-group">
+                <label for="symmetry">Symmetry Segments: <span class="value-display" id="symmetryValue">8</span></label>
+                <input type="range" id="symmetry" min="3" max="24" step="1" value="8" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="rotation">Rotation Speed: <span class="value-display" id="rotationValue">0.0</span></label>
+                <input type="range" id="rotation" min="0" max="2" step="0.1" value="0" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="patternScale">Pattern Scale: <span class="value-display" id="patternScaleValue">1.0</span></label>
+                <input type="range" id="patternScale" min="0.5" max="3.0" step="0.1" value="1.0" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Shape Settings</h2>
+            <div class="control-group">
+                <label for="shapeType">Shape Type:</label>
+                <select id="shapeType" onchange="updateAndDraw()">
+                    <option value="circle">Circle</option>
+                    <option value="triangle">Triangle</option>
+                    <option value="square">Square</option>
+                    <option value="pentagon">Pentagon</option>
+                    <option value="hexagon">Hexagon</option>
+                    <option value="star">Star</option>
+                    <option value="diamond">Diamond</option>
+                    <option value="mixed">Mixed Shapes</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="shapeSize">Shape Size: <span class="value-display" id="shapeSizeValue">50</span></label>
+                <input type="range" id="shapeSize" min="10" max="200" step="5" value="50" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="shapeCount">Number of Shapes: <span class="value-display" id="shapeCountValue">5</span></label>
+                <input type="range" id="shapeCount" min="1" max="20" step="1" value="5" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Colors</h2>
+            <div class="control-group">
+                <label for="colorMode">Color Mode:</label>
+                <select id="colorMode" onchange="updateAndDraw()">
+                    <option value="rainbow">Rainbow</option>
+                    <option value="monochrome">Monochrome</option>
+                    <option value="complementary">Complementary</option>
+                    <option value="triadic">Triadic</option>
+                    <option value="custom">Custom Colors</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="customColors" style="display: none;">
+                <label for="color1">Primary Color:</label>
+                <input type="color" id="color1" class="color-input" value="#ff6b6b" onchange="updateAndDraw()">
+                
+                <label for="color2">Secondary Color:</label>
+                <input type="color" id="color2" class="color-input" value="#4ecdc4" onchange="updateAndDraw()">
+                
+                <label for="color3">Accent Color:</label>
+                <input type="color" id="color3" class="color-input" value="#45b7d1" onchange="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="opacity">Opacity: <span class="value-display" id="opacityValue">0.8</span></label>
+                <input type="range" id="opacity" min="0.1" max="1.0" step="0.1" value="0.8" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Rendering Options</h2>
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="enableHatching" onchange="updateAndDraw()">
+                    Enable Hatching Fill
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label for="hatchDensity">Hatch Density: <span class="value-display" id="hatchDensityValue">2.0</span></label>
+                <input type="range" id="hatchDensity" min="0.5" max="5.0" step="0.1" value="2.0" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showOutlines" onchange="updateAndDraw()" checked>
+                    Show Shape Outlines
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="animatePattern" onchange="updateAndDraw()">
+                    Animate Pattern
+                </label>
+            </div>
+
+            <h2>Export</h2>
+            <button class="btn-primary" onclick="downloadSVG()">Download as SVG</button>
+            <button class="btn-secondary" onclick="resetSettings()">Reset Settings</button>
+            
+            <div class="info-text">
+                <p>Create beautiful kaleidoscope patterns with geometric shapes. Adjust symmetry, colors, and rendering options to create unique designs.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myCanvas;
+        let timeOffset = 0;
+        let updateTimeout;
+        let animationId;
+        
+        function setup() {
+            myCanvas = createCanvas(800, 600, SVG);
+            myCanvas.parent('canvas-holder');
+            noLoop();
+            
+            // Show/hide custom colors based on color mode
+            document.getElementById('colorMode').addEventListener('change', function() {
+                const customColors = document.getElementById('customColors');
+                if (this.value === 'custom') {
+                    customColors.style.display = 'block';
+                } else {
+                    customColors.style.display = 'none';
+                }
+            });
+            
+            updateAndDraw();
+        }
+
+        function draw() {
+            drawKaleidoscope();
+        }
+        
+        function updateAndDraw() {
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(() => {
+                updateDisplayValues();
+                redraw();
+            }, 16);
+        }
+        
+        function updateDisplayValues() {
+            document.getElementById('symmetryValue').textContent = document.getElementById('symmetry').value;
+            document.getElementById('rotationValue').textContent = parseFloat(document.getElementById('rotation').value).toFixed(1);
+            document.getElementById('patternScaleValue').textContent = parseFloat(document.getElementById('patternScale').value).toFixed(1);
+            document.getElementById('shapeSizeValue').textContent = document.getElementById('shapeSize').value;
+            document.getElementById('shapeCountValue').textContent = document.getElementById('shapeCount').value;
+            document.getElementById('opacityValue').textContent = parseFloat(document.getElementById('opacity').value).toFixed(1);
+            document.getElementById('hatchDensityValue').textContent = parseFloat(document.getElementById('hatchDensity').value).toFixed(1);
+        }
+        
+        function drawKaleidoscope() {
+            background(255);
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const symmetry = parseInt(document.getElementById('symmetry').value);
+            const rotation = parseFloat(document.getElementById('rotation').value);
+            const patternScale = parseFloat(document.getElementById('patternScale').value);
+            const shapeSize = parseInt(document.getElementById('shapeSize').value);
+            const shapeCount = parseInt(document.getElementById('shapeCount').value);
+            const opacity = parseFloat(document.getElementById('opacity').value);
+            const enableHatching = document.getElementById('enableHatching').checked;
+            const hatchDensity = parseFloat(document.getElementById('hatchDensity').value);
+            const showOutlines = document.getElementById('showOutlines').checked;
+            const animatePattern = document.getElementById('animatePattern').checked;
+            
+            // Calculate rotation based on time if animation is enabled
+            let currentRotation = 0;
+            if (animatePattern) {
+                currentRotation = (millis() * 0.001 * rotation) % (TWO_PI / symmetry);
+            } else {
+                currentRotation = timeOffset * rotation;
+            }
+            
+            // Create SVG layers for pen plotting
+            createSVGLayers(centerX, centerY, symmetry, rotation, patternScale, shapeSize, shapeCount, opacity, enableHatching, hatchDensity, showOutlines, currentRotation);
+        }
+        
+        function createSVGLayers(centerX, centerY, symmetry, rotation, patternScale, shapeSize, shapeCount, opacity, enableHatching, hatchDensity, showOutlines, currentRotation) {
+            // Layer 1: Main Pattern
+            push();
+            // SVG Group: Kaleidoscope Pattern Layer
+            drawKaleidoscopePattern(centerX, centerY, symmetry, rotation, patternScale, shapeSize, shapeCount, opacity, enableHatching, hatchDensity, showOutlines, currentRotation);
+            pop();
+        }
+        
+        function drawKaleidoscopePattern(centerX, centerY, symmetry, rotation, patternScale, shapeSize, shapeCount, opacity, enableHatching, hatchDensity, showOutlines, currentRotation) {
+            const segmentAngle = TWO_PI / symmetry;
+            
+            // Generate random shapes for the base pattern
+            const shapes = generateShapes(shapeCount, shapeSize, patternScale);
+            
+            // Draw each symmetry segment
+            for (let segment = 0; segment < symmetry; segment++) {
+                push();
+                
+                // Rotate to current segment
+                translate(centerX, centerY);
+                rotate(segment * segmentAngle + currentRotation);
+                
+                // Draw shapes in this segment
+                shapes.forEach(shape => {
+                    drawShapeInSegment(shape, opacity, enableHatching, hatchDensity, showOutlines);
+                });
+                
+                pop();
+            }
+        }
+        
+        function generateShapes(count, size, scale) {
+            const shapes = [];
+            const shapeType = document.getElementById('shapeType').value;
+            
+            for (let i = 0; i < count; i++) {
+                const shape = {
+                    type: shapeType === 'mixed' ? getRandomShapeType() : shapeType,
+                    x: random(-width/4, width/4),
+                    y: random(-height/4, height/4),
+                    size: size * random(0.5, 1.5) * scale,
+                    rotation: random(0, TWO_PI),
+                    color: getShapeColor(i)
+                };
+                shapes.push(shape);
+            }
+            
+            return shapes;
+        }
+        
+        function getRandomShapeType() {
+            const types = ['circle', 'triangle', 'square', 'pentagon', 'hexagon', 'star', 'diamond'];
+            return types[Math.floor(Math.random() * types.length)];
+        }
+        
+        function getShapeColor(index) {
+            const colorMode = document.getElementById('colorMode').value;
+            const hue = (index * 360 / parseInt(document.getElementById('shapeCount').value)) % 360;
+            
+            switch (colorMode) {
+                case 'rainbow':
+                    return color(hue, 80, 80);
+                case 'monochrome':
+                    return color(0, 0, random(20, 80));
+                case 'complementary':
+                    return color(hue, 80, 80);
+                case 'triadic':
+                    return color((hue + 120) % 360, 80, 80);
+                case 'custom':
+                    const colors = [
+                        document.getElementById('color1').value,
+                        document.getElementById('color2').value,
+                        document.getElementById('color3').value
+                    ];
+                    return color(colors[index % colors.length]);
+                default:
+                    return color(hue, 80, 80);
+            }
+        }
+        
+        function drawShapeInSegment(shape, opacity, enableHatching, hatchDensity, showOutlines) {
+            push();
+            translate(shape.x, shape.y);
+            rotate(shape.rotation);
+            
+            // Set color with opacity
+            const shapeColor = shape.color;
+            shapeColor.setAlpha(opacity * 255);
+            fill(shapeColor);
+            
+            if (showOutlines) {
+                stroke(0);
+                strokeWeight(1);
+            } else {
+                noStroke();
+            }
+            
+            // Draw the shape
+            drawShape(shape.type, shape.size);
+            
+            // Add hatching if enabled
+            if (enableHatching) {
+                drawShapeHatching(shape.type, shape.size, hatchDensity);
+            }
+            
+            pop();
+        }
+        
+        function drawShape(type, size) {
+            const radius = size / 2;
+            
+            switch (type) {
+                case 'circle':
+                    ellipse(0, 0, size, size);
+                    break;
+                case 'triangle':
+                    drawPolygon(3, radius);
+                    break;
+                case 'square':
+                    drawPolygon(4, radius);
+                    break;
+                case 'pentagon':
+                    drawPolygon(5, radius);
+                    break;
+                case 'hexagon':
+                    drawPolygon(6, radius);
+                    break;
+                case 'star':
+                    drawStar(radius);
+                    break;
+                case 'diamond':
+                    drawDiamond(radius);
+                    break;
+            }
+        }
+        
+        function drawPolygon(sides, radius) {
+            beginShape();
+            for (let i = 0; i < sides; i++) {
+                const angle = (i * TWO_PI) / sides;
+                const x = cos(angle) * radius;
+                const y = sin(angle) * radius;
+                vertex(x, y);
+            }
+            endShape(CLOSE);
+        }
+        
+        function drawStar(radius) {
+            const innerRadius = radius * 0.4;
+            const points = 5;
+            
+            beginShape();
+            for (let i = 0; i < points * 2; i++) {
+                const angle = (i * PI) / points;
+                const r = i % 2 === 0 ? radius : innerRadius;
+                const x = cos(angle) * r;
+                const y = sin(angle) * r;
+                vertex(x, y);
+            }
+            endShape(CLOSE);
+        }
+        
+        function drawDiamond(radius) {
+            beginShape();
+            vertex(0, -radius);
+            vertex(radius, 0);
+            vertex(0, radius);
+            vertex(-radius, 0);
+            endShape(CLOSE);
+        }
+        
+        function drawShapeHatching(type, size, density) {
+            stroke(0);
+            strokeWeight(0.3);
+            noFill();
+            
+            const radius = size / 2;
+            const spacing = 3 / density;
+            
+            // Set random angle for hatching
+            randomSeed(parseInt(type.charCodeAt(0)) * 1000);
+            const angle = random(0, PI / 4);
+            
+            // Draw hatching lines
+            for (let offset = -radius; offset <= radius; offset += spacing) {
+                const perpX = -sin(angle) * offset;
+                const perpY = cos(angle) * offset;
+                
+                // Find intersection points with shape bounds
+                const halfLength = sqrt(radius * radius - offset * offset);
+                if (halfLength > 0) {
+                    const x1 = cos(angle) * halfLength + perpX;
+                    const y1 = sin(angle) * halfLength + perpY;
+                    const x2 = -cos(angle) * halfLength + perpX;
+                    const y2 = -sin(angle) * halfLength + perpY;
+                    
+                    line(x1, y1, x2, y2);
+                }
+            }
+        }
+        
+        function downloadSVG() {
+            save('kaleidoscope-pattern.svg');
+        }
+        
+        function resetSettings() {
+            document.getElementById('symmetry').value = 8;
+            document.getElementById('rotation').value = 0;
+            document.getElementById('patternScale').value = 1.0;
+            document.getElementById('shapeType').value = 'circle';
+            document.getElementById('shapeSize').value = 50;
+            document.getElementById('shapeCount').value = 5;
+            document.getElementById('colorMode').value = 'rainbow';
+            document.getElementById('opacity').value = 0.8;
+            document.getElementById('enableHatching').checked = false;
+            document.getElementById('hatchDensity').value = 2.0;
+            document.getElementById('showOutlines').checked = true;
+            document.getElementById('animatePattern').checked = false;
+            
+            // Hide custom colors
+            document.getElementById('customColors').style.display = 'none';
+            
+            updateAndDraw();
+        }
+    </script>
+</body>
+</html>

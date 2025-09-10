@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandala Creator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5.js-svg@1.5.1/dist/p5.svg.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-size: 2.5em;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ddd;
+        }
+        
+        #canvas-holder {
+            display: block;
+        }
+        
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+        }
+        
+        h2 {
+            color: #333;
+            margin: 20px 0 15px 0;
+            font-size: 1.4em;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+            background: #ddd;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            color: #333;
+            font-size: 1em;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #333;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: #ddd;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #ccc;
+        }
+        
+        .value-display {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .color-input {
+            width: 100%;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .info-text {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>🕉️ Mandala Creator</h1>
+    <div class="container">
+        <div class="canvas-container">
+            <div id="canvas-holder"></div>
+        </div>
+        <div class="controls">
+            <h2>Mandala Structure</h2>
+            <div class="control-group">
+                <label for="layers">Number of Layers: <span class="value-display" id="layersValue">5</span></label>
+                <input type="range" id="layers" min="2" max="12" step="1" value="5" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="segments">Radial Segments: <span class="value-display" id="segmentsValue">16</span></label>
+                <input type="range" id="segments" min="4" max="64" step="2" value="16" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="centerSize">Center Size: <span class="value-display" id="centerSizeValue">50</span></label>
+                <input type="range" id="centerSize" min="10" max="150" step="5" value="50" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="layerSpacing">Layer Spacing: <span class="value-display" id="layerSpacingValue">40</span></label>
+                <input type="range" id="layerSpacing" min="20" max="100" step="5" value="40" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Pattern Elements</h2>
+            <div class="control-group">
+                <label for="patternType">Pattern Type:</label>
+                <select id="patternType" onchange="updateAndDraw()">
+                    <option value="geometric">Geometric</option>
+                    <option value="floral">Floral</option>
+                    <option value="spiral">Spiral</option>
+                    <option value="mandala">Traditional Mandala</option>
+                    <option value="mixed">Mixed Patterns</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="elementSize">Element Size: <span class="value-display" id="elementSizeValue">20</span></label>
+                <input type="range" id="elementSize" min="5" max="50" step="2" value="20" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="complexity">Pattern Complexity: <span class="value-display" id="complexityValue">3</span></label>
+                <input type="range" id="complexity" min="1" max="5" step="1" value="3" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Colors & Style</h2>
+            <div class="control-group">
+                <label for="colorScheme">Color Scheme:</label>
+                <select id="colorScheme" onchange="updateAndDraw()">
+                    <option value="rainbow">Rainbow</option>
+                    <option value="monochrome">Monochrome</option>
+                    <option value="warm">Warm Colors</option>
+                    <option value="cool">Cool Colors</option>
+                    <option value="earth">Earth Tones</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="customColors" style="display: none;">
+                <label for="color1">Primary Color:</label>
+                <input type="color" id="color1" class="color-input" value="#ff6b6b" onchange="updateAndDraw()">
+                
+                <label for="color2">Secondary Color:</label>
+                <input type="color" id="color2" class="color-input" value="#4ecdc4" onchange="updateAndDraw()">
+                
+                <label for="color3">Accent Color:</label>
+                <input type="color" id="color3" class="color-input" value="#45b7d1" onchange="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="opacity">Opacity: <span class="value-display" id="opacityValue">0.8</span></label>
+                <input type="range" id="opacity" min="0.1" max="1.0" step="0.1" value="0.8" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Rendering Options</h2>
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="enableHatching" onchange="updateAndDraw()">
+                    Enable Hatching Fill
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label for="hatchDensity">Hatch Density: <span class="value-display" id="hatchDensityValue">2.0</span></label>
+                <input type="range" id="hatchDensity" min="0.5" max="5.0" step="0.1" value="2.0" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showOutlines" onchange="updateAndDraw()" checked>
+                    Show Element Outlines
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="gradientFill" onchange="updateAndDraw()">
+                    Gradient Fill
+                </label>
+            </div>
+
+            <h2>Export</h2>
+            <button class="btn-primary" onclick="downloadSVG()">Download as SVG</button>
+            <button class="btn-secondary" onclick="resetSettings()">Reset Settings</button>
+            
+            <div class="info-text">
+                <p>Create beautiful mandala patterns with radial symmetry. Adjust layers, patterns, and colors to create unique spiritual and artistic designs.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myCanvas;
+        let timeOffset = 0;
+        let updateTimeout;
+        
+        function setup() {
+            myCanvas = createCanvas(800, 600, SVG);
+            myCanvas.parent('canvas-holder');
+            noLoop();
+            
+            // Show/hide custom colors based on color scheme
+            document.getElementById('colorScheme').addEventListener('change', function() {
+                const customColors = document.getElementById('customColors');
+                if (this.value === 'custom') {
+                    customColors.style.display = 'block';
+                } else {
+                    customColors.style.display = 'none';
+                }
+            });
+            
+            updateAndDraw();
+        }
+
+        function draw() {
+            drawMandala();
+        }
+        
+        function updateAndDraw() {
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(() => {
+                updateDisplayValues();
+                redraw();
+            }, 16);
+        }
+        
+        function updateDisplayValues() {
+            document.getElementById('layersValue').textContent = document.getElementById('layers').value;
+            document.getElementById('segmentsValue').textContent = document.getElementById('segments').value;
+            document.getElementById('centerSizeValue').textContent = document.getElementById('centerSize').value;
+            document.getElementById('layerSpacingValue').textContent = document.getElementById('layerSpacing').value;
+            document.getElementById('elementSizeValue').textContent = document.getElementById('elementSize').value;
+            document.getElementById('complexityValue').textContent = document.getElementById('complexity').value;
+            document.getElementById('opacityValue').textContent = parseFloat(document.getElementById('opacity').value).toFixed(1);
+            document.getElementById('hatchDensityValue').textContent = parseFloat(document.getElementById('hatchDensity').value).toFixed(1);
+        }
+        
+        function drawMandala() {
+            background(255);
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const layers = parseInt(document.getElementById('layers').value);
+            const segments = parseInt(document.getElementById('segments').value);
+            const centerSize = parseInt(document.getElementById('centerSize').value);
+            const layerSpacing = parseInt(document.getElementById('layerSpacing').value);
+            const elementSize = parseInt(document.getElementById('elementSize').value);
+            const complexity = parseInt(document.getElementById('complexity').value);
+            const opacity = parseFloat(document.getElementById('opacity').value);
+            const enableHatching = document.getElementById('enableHatching').checked;
+            const hatchDensity = parseFloat(document.getElementById('hatchDensity').value);
+            const showOutlines = document.getElementById('showOutlines').checked;
+            const gradientFill = document.getElementById('gradientFill').checked;
+            
+            // Create SVG layers for pen plotting
+            createSVGLayers(centerX, centerY, layers, segments, centerSize, layerSpacing, elementSize, complexity, opacity, enableHatching, hatchDensity, showOutlines, gradientFill);
+        }
+        
+        function createSVGLayers(centerX, centerY, layers, segments, centerSize, layerSpacing, elementSize, complexity, opacity, enableHatching, hatchDensity, showOutlines, gradientFill) {
+            // Layer 1: Center Circle
+            push();
+            // SVG Group: Center Circle Layer
+            drawCenterCircle(centerX, centerY, centerSize, opacity, enableHatching, hatchDensity, showOutlines, gradientFill);
+            pop();
+            
+            // Layer 2: Mandala Layers
+            push();
+            // SVG Group: Mandala Layers
+            drawMandalaLayers(centerX, centerY, layers, segments, centerSize, layerSpacing, elementSize, complexity, opacity, enableHatching, hatchDensity, showOutlines, gradientFill);
+            pop();
+        }
+        
+        function drawCenterCircle(centerX, centerY, centerSize, opacity, enableHatching, hatchDensity, showOutlines, gradientFill) {
+            const color = getColorForLayer(0, 1, opacity);
+            color.setAlpha(opacity * 255);
+            
+            if (gradientFill) {
+                // Create radial gradient effect
+                for (let r = centerSize; r > 0; r -= 2) {
+                    const gradientColor = getColorForLayer(0, 1, opacity);
+                    gradientColor.setAlpha((opacity * 255 * (centerSize - r)) / centerSize);
+                    fill(gradientColor);
+                    noStroke();
+                    ellipse(centerX, centerY, r, r);
+                }
+            } else {
+                fill(color);
+                if (showOutlines) {
+                    stroke(0);
+                    strokeWeight(1);
+                } else {
+                    noStroke();
+                }
+                ellipse(centerX, centerY, centerSize, centerSize);
+            }
+            
+            if (enableHatching) {
+                drawCircleHatching(centerX, centerY, centerSize / 2, hatchDensity);
+            }
+        }
+        
+        function drawMandalaLayers(centerX, centerY, layers, segments, centerSize, layerSpacing, elementSize, complexity, opacity, enableHatching, hatchDensity, showOutlines, gradientFill) {
+            const segmentAngle = TWO_PI / segments;
+            
+            for (let layer = 1; layer < layers; layer++) {
+                const layerRadius = centerSize + (layer * layerSpacing);
+                const elementsPerSegment = Math.max(1, Math.floor(complexity * (layer + 1) / 2));
+                
+                for (let segment = 0; segment < segments; segment++) {
+                    const angle = segment * segmentAngle;
+                    
+                    for (let element = 0; element < elementsPerSegment; element++) {
+                        const elementAngle = angle + (element * segmentAngle / elementsPerSegment);
+                        const elementRadius = layerRadius - (element * layerSpacing / elementsPerSegment);
+                        
+                        const x = centerX + cos(elementAngle) * elementRadius;
+                        const y = centerY + sin(elementAngle) * elementRadius;
+                        
+                        drawMandalaElement(x, y, elementSize, layer, element, opacity, enableHatching, hatchDensity, showOutlines, gradientFill);
+                    }
+                }
+            }
+        }
+        
+        function drawMandalaElement(x, y, size, layer, element, opacity, enableHatching, hatchDensity, showOutlines, gradientFill) {
+            const patternType = document.getElementById('patternType').value;
+            const color = getColorForLayer(layer, element, opacity);
+            color.setAlpha(opacity * 255);
+            
+            push();
+            translate(x, y);
+            
+            if (gradientFill) {
+                // Create gradient effect
+                for (let s = size; s > 0; s -= 1) {
+                    const gradientColor = getColorForLayer(layer, element, opacity);
+                    gradientColor.setAlpha((opacity * 255 * (size - s)) / size);
+                    fill(gradientColor);
+                    noStroke();
+                    drawPatternElement(patternType, s);
+                }
+            } else {
+                fill(color);
+                if (showOutlines) {
+                    stroke(0);
+                    strokeWeight(0.5);
+                } else {
+                    noStroke();
+                }
+                drawPatternElement(patternType, size);
+            }
+            
+            if (enableHatching) {
+                drawElementHatching(patternType, size, hatchDensity);
+            }
+            
+            pop();
+        }
+        
+        function drawPatternElement(type, size) {
+            const radius = size / 2;
+            
+            switch (type) {
+                case 'geometric':
+                    drawGeometricElement(radius);
+                    break;
+                case 'floral':
+                    drawFloralElement(radius);
+                    break;
+                case 'spiral':
+                    drawSpiralElement(radius);
+                    break;
+                case 'mandala':
+                    drawTraditionalMandalaElement(radius);
+                    break;
+                case 'mixed':
+                    const types = ['geometric', 'floral', 'spiral', 'mandala'];
+                    const randomType = types[Math.floor(Math.random() * types.length)];
+                    drawPatternElement(randomType, size);
+                    break;
+            }
+        }
+        
+        function drawGeometricElement(radius) {
+            const sides = Math.floor(random(3, 8));
+            drawPolygon(sides, radius);
+        }
+        
+        function drawFloralElement(radius) {
+            // Draw petal-like shape
+            beginShape();
+            for (let i = 0; i < 8; i++) {
+                const angle = (i * TWO_PI) / 8;
+                const petalRadius = radius * (0.3 + 0.7 * sin(angle * 4));
+                const x = cos(angle) * petalRadius;
+                const y = sin(angle) * petalRadius;
+                vertex(x, y);
+            }
+            endShape(CLOSE);
+        }
+        
+        function drawSpiralElement(radius) {
+            // Draw spiral pattern
+            beginShape();
+            for (let i = 0; i < 20; i++) {
+                const angle = i * 0.3;
+                const r = (i / 20) * radius;
+                const x = cos(angle) * r;
+                const y = sin(angle) * r;
+                vertex(x, y);
+            }
+            endShape();
+        }
+        
+        function drawTraditionalMandalaElement(radius) {
+            // Draw traditional mandala element
+            ellipse(0, 0, radius * 2, radius * 2);
+            
+            // Add inner details
+            noFill();
+            stroke(0);
+            strokeWeight(0.5);
+            for (let i = 1; i <= 3; i++) {
+                ellipse(0, 0, (radius * 2 * i) / 4, (radius * 2 * i) / 4);
+            }
+        }
+        
+        function drawPolygon(sides, radius) {
+            beginShape();
+            for (let i = 0; i < sides; i++) {
+                const angle = (i * TWO_PI) / sides;
+                const x = cos(angle) * radius;
+                const y = sin(angle) * radius;
+                vertex(x, y);
+            }
+            endShape(CLOSE);
+        }
+        
+        function getColorForLayer(layer, element, opacity) {
+            const colorScheme = document.getElementById('colorScheme').value;
+            const hue = (layer * 60 + element * 30) % 360;
+            
+            switch (colorScheme) {
+                case 'rainbow':
+                    return color(hue, 80, 80);
+                case 'monochrome':
+                    return color(0, 0, random(20, 80));
+                case 'warm':
+                    return color(random(0, 60), 80, 80);
+                case 'cool':
+                    return color(random(180, 240), 80, 80);
+                case 'earth':
+                    return color(random(20, 60), 60, 60);
+                case 'custom':
+                    const colors = [
+                        document.getElementById('color1').value,
+                        document.getElementById('color2').value,
+                        document.getElementById('color3').value
+                    ];
+                    return color(colors[(layer + element) % colors.length]);
+                default:
+                    return color(hue, 80, 80);
+            }
+        }
+        
+        function drawCircleHatching(centerX, centerY, radius, density) {
+            stroke(0);
+            strokeWeight(0.3);
+            noFill();
+            
+            const spacing = 3 / density;
+            const angle = random(0, PI / 4);
+            
+            for (let offset = -radius; offset <= radius; offset += spacing) {
+                const perpX = -sin(angle) * offset;
+                const perpY = cos(angle) * offset;
+                
+                const halfLength = sqrt(radius * radius - offset * offset);
+                if (halfLength > 0) {
+                    const x1 = centerX + cos(angle) * halfLength + perpX;
+                    const y1 = centerY + sin(angle) * halfLength + perpY;
+                    const x2 = centerX - cos(angle) * halfLength + perpX;
+                    const y2 = centerY - sin(angle) * halfLength + perpY;
+                    
+                    line(x1, y1, x2, y2);
+                }
+            }
+        }
+        
+        function drawElementHatching(type, size, density) {
+            stroke(0);
+            strokeWeight(0.3);
+            noFill();
+            
+            const radius = size / 2;
+            const spacing = 3 / density;
+            const angle = random(0, PI / 4);
+            
+            for (let offset = -radius; offset <= radius; offset += spacing) {
+                const perpX = -sin(angle) * offset;
+                const perpY = cos(angle) * offset;
+                
+                const halfLength = sqrt(radius * radius - offset * offset);
+                if (halfLength > 0) {
+                    const x1 = cos(angle) * halfLength + perpX;
+                    const y1 = sin(angle) * halfLength + perpY;
+                    const x2 = -cos(angle) * halfLength + perpX;
+                    const y2 = -sin(angle) * halfLength + perpY;
+                    
+                    line(x1, y1, x2, y2);
+                }
+            }
+        }
+        
+        function downloadSVG() {
+            save('mandala-pattern.svg');
+        }
+        
+        function resetSettings() {
+            document.getElementById('layers').value = 5;
+            document.getElementById('segments').value = 16;
+            document.getElementById('centerSize').value = 50;
+            document.getElementById('layerSpacing').value = 40;
+            document.getElementById('patternType').value = 'geometric';
+            document.getElementById('elementSize').value = 20;
+            document.getElementById('complexity').value = 3;
+            document.getElementById('colorScheme').value = 'rainbow';
+            document.getElementById('opacity').value = 0.8;
+            document.getElementById('enableHatching').checked = false;
+            document.getElementById('hatchDensity').value = 2.0;
+            document.getElementById('showOutlines').checked = true;
+            document.getElementById('gradientFill').checked = false;
+            
+            // Hide custom colors
+            document.getElementById('customColors').style.display = 'none';
+            
+            updateAndDraw();
+        }
+    </script>
+</body>
+</html>
