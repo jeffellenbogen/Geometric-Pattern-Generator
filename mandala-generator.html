@@ -223,11 +223,10 @@
             <div class="control-group">
                 <label for="colorScheme">Color Scheme:</label>
                 <select id="colorScheme" onchange="updateAndDraw()">
-                    <option value="rainbow">Rainbow</option>
-                    <option value="monochrome">Monochrome</option>
-                    <option value="warm">Warm Colors</option>
-                    <option value="cool">Cool Colors</option>
-                    <option value="earth">Earth Tones</option>
+                    <option value="spring">🌸 Spring</option>
+                    <option value="summer">☀️ Summer</option>
+                    <option value="autumn">🍂 Autumn</option>
+                    <option value="winter">❄️ Winter</option>
                     <option value="custom">Custom</option>
                 </select>
             </div>
@@ -537,16 +536,62 @@
             const hue = (layer * 60 + element * 30) % 360;
             
             switch (colorScheme) {
-                case 'rainbow':
-                    return color(hue, 80, 80);
-                case 'monochrome':
-                    return color(0, 0, random(20, 80));
-                case 'warm':
-                    return color(random(0, 60), 80, 80);
-                case 'cool':
-                    return color(random(180, 240), 80, 80);
-                case 'earth':
-                    return color(random(20, 60), 60, 60);
+                case 'spring':
+                    // Spring: Fresh greens, pastel pinks, soft yellows, lavender, mint
+                    const springColors = [
+                        color(120, 70, 85),  // Fresh green
+                        color(320, 40, 90),  // Soft pink
+                        color(60, 50, 90),   // Light yellow
+                        color(280, 30, 85),  // Lavender
+                        color(150, 50, 80),  // Mint green
+                        color(30, 60, 85),   // Peach
+                        color(200, 40, 90),  // Sky blue
+                        color(100, 60, 75)   // Sage green
+                    ];
+                    return springColors[(layer + element) % springColors.length];
+                    
+                case 'summer':
+                    // Summer: Vibrant blues, bright oranges, sunny yellows, coral, turquoise
+                    const summerColors = [
+                        color(200, 80, 70),  // Ocean blue
+                        color(30, 90, 80),   // Bright orange
+                        color(50, 95, 85),   // Sunny yellow
+                        color(15, 70, 85),   // Coral
+                        color(180, 70, 75),  // Turquoise
+                        color(280, 60, 80),  // Hot pink
+                        color(120, 80, 70),  // Lime green
+                        color(240, 50, 90)   // Light purple
+                    ];
+                    return summerColors[(layer + element) % summerColors.length];
+                    
+                case 'autumn':
+                    // Autumn: Rich oranges, deep reds, golden yellows, browns, burgundy
+                    const autumnColors = [
+                        color(25, 85, 70),   // Deep orange
+                        color(0, 80, 60),    // Crimson red
+                        color(45, 90, 75),   // Golden yellow
+                        color(30, 60, 50),   // Burnt orange
+                        color(15, 70, 40),   // Dark red
+                        color(60, 70, 60),   // Mustard
+                        color(20, 50, 35),   // Brown
+                        color(340, 60, 50)   // Burgundy
+                    ];
+                    return autumnColors[(layer + element) % autumnColors.length];
+                    
+                case 'winter':
+                    // Winter: Cool blues, icy whites, deep purples, silver, frosty greens
+                    const winterColors = [
+                        color(220, 60, 80),  // Ice blue
+                        color(0, 0, 95),     // Pure white
+                        color(270, 50, 70),  // Deep purple
+                        color(200, 30, 90),  // Light blue
+                        color(240, 20, 85),  // Silver
+                        color(180, 40, 60),  // Steel blue
+                        color(300, 30, 60),  // Plum
+                        color(160, 50, 70)   // Frost green
+                    ];
+                    return winterColors[(layer + element) % winterColors.length];
+                    
                 case 'custom':
                     const colors = [
                         document.getElementById('color1').value,
@@ -620,7 +665,7 @@
             document.getElementById('patternType').value = 'geometric';
             document.getElementById('elementSize').value = 20;
             document.getElementById('complexity').value = 3;
-            document.getElementById('colorScheme').value = 'rainbow';
+            document.getElementById('colorScheme').value = 'spring';
             document.getElementById('opacity').value = 0.8;
             document.getElementById('enableHatching').checked = false;
             document.getElementById('hatchDensity').value = 2.0;
