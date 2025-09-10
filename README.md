@@ -6,5 +6,6 @@ Explorations have included coding via prompting in Claude, Gemini, and eventuall
 Variations so far include...</br>
 <b>Geometric Pattern Generator (Mandalas made of shapes) </br>
 Wave pattern Generator (Sine, Cosine, Square Wave, etc.) </br>
-Planetary position of our solar system</b>
+[Planetary position of our solar system]([url](https://github.com/jeffellenbogen/Geometric-Pattern-Generator/blob/main/geometric-pattern-generator-Gemini-090425.html))</b>
 
+https://github.com/jeffellenbogen/Geometric-Pattern-Generator/blob/main/geometric-pattern-generator-Gemini-090425.html
