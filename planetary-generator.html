@@ -513,6 +513,7 @@
             }
         };
         
+        
         function setup() {
             myCanvas = createCanvas(800, 600, SVG);
             myCanvas.parent('canvas-holder');
@@ -703,16 +704,16 @@
         function drawEllipticalOrbit(planet, centerX, centerY, zoomLevel) {
             const a = planet.semiMajorAxis * zoomLevel; // Semi-major axis
             const e = planet.eccentricity; // Eccentricity
-            const b = a * Math.sqrt(1 - e * e); // Semi-minor axis
             const c = a * e; // Distance from center to focus
             
-            // Draw elliptical orbit using parametric equations
+            // Draw elliptical orbit using true anomaly parameterization
             beginShape();
             noFill();
-            for (let angle = 0; angle < TWO_PI; angle += 0.1) {
-                const r = a * (1 - e * e) / (1 + e * cos(angle));
-                const x = centerX + c + r * cos(angle);
-                const y = centerY + r * sin(angle);
+            for (let trueAnomaly = 0; trueAnomaly < TWO_PI; trueAnomaly += 0.1) {
+                // Calculate radius using true anomaly
+                const r = a * (1 - e * e) / (1 + e * cos(trueAnomaly));
+                const x = centerX + c + r * cos(trueAnomaly);
+                const y = centerY + r * sin(trueAnomaly);
                 vertex(x, y);
             }
             endShape(CLOSE);
@@ -908,12 +909,12 @@
                         x = centerX;
                         y = centerY;
                     } else {
-                        // Calculate planet position on elliptical orbit using same math as orbit drawing
+                        // Calculate planet position on elliptical orbit using true anomaly
                         const a = planet.semiMajorAxis * zoomLevel;
                         const e = planet.eccentricity;
                         const c = a * e; // Distance from center to focus
                         
-                        // Calculate position on ellipse using polar coordinates
+                        // Calculate position using true anomaly (planet.angle is now true anomaly in radians)
                         const r = a * (1 - e * e) / (1 + e * cos(planet.angle));
                         x = centerX + c + r * cos(planet.angle);
                         y = centerY + r * sin(planet.angle);
@@ -1097,6 +1098,7 @@
             
             updateAndDraw();
         }
+        
     </script>
 </body>
 </html>
