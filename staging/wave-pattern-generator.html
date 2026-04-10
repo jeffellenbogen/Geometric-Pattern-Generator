@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overlapping Wave Pattern Generator</title>
+    <!-- Use a p5.js version known to be compatible with the SVG library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <!-- Added p5.svg.js library for perfect SVG export -->
+    <script src="https://cdn.jsdelivr.net/npm/p5.js-svg@1.5.1/dist/p5.svg.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            flex: 1;
+            min-width: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #canvas-holder {
+            display: block;
+        }
+        
+        .controls {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 350px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        h2 {
+            color: #764ba2;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .value-display {
+            color: #764ba2;
+            font-weight: 600;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            color: #333;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌊 Overlapping Wave Pattern Generator for Pen Plotting</h1>
+    <div class="container">
+        <div class="canvas-container">
+            <div id="canvas-holder"></div>
+        </div>
+        <div class="controls">
+            <h2>Wave Settings</h2>
+            <div class="control-group">
+                <label for="numWaves">Number of Waves: <span class="value-display" id="numWavesValue">5</span></label>
+                <input type="range" id="numWaves" min="1" max="50" value="5" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="amplitude">Amplitude: <span class="value-display" id="amplitudeValue">50</span></label>
+                <input type="range" id="amplitude" min="10" max="150" value="50" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="noise">Noise Level: <span class="value-display" id="noiseValue">0.1</span></label>
+                <input type="range" id="noise" min="0" max="1" step="0.01" value="0.1" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="variability">Variability: <span class="value-display" id="variabilityValue">0.3</span></label>
+                <input type="range" id="variability" min="0" max="1" step="0.01" value="0.3" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="stretchHorizontal">Stretch Horizontal: <span class="value-display" id="stretchHorizontalValue">1.0</span></label>
+                <input type="range" id="stretchHorizontal" min="0.1" max="3.0" step="0.1" value="1.0" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Wave Properties</h2>
+            <div class="control-group">
+                <label for="waveType">Wave Type:</label>
+                <select id="waveType" onchange="updateAndDraw()">
+                    <option value="sine">Sine Wave</option>
+                    <option value="cosine">Cosine Wave</option>
+                    <option value="triangle">Triangle Wave</option>
+                    <option value="sawtooth">Sawtooth Wave</option>
+                    <option value="square">Square Wave</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="frequency">Frequency Multiplier: <span class="value-display" id="frequencyValue">1.0</span></label>
+                <input type="range" id="frequency" min="0.1" max="12.0" step="0.1" value="1.0" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label for="phaseOffset">Phase Offset: <span class="value-display" id="phaseOffsetValue">0</span>°</label>
+                <input type="range" id="phaseOffset" min="0" max="360" value="0" oninput="updateAndDraw()">
+            </div>
+
+            <h2>Visual Options</h2>
+            <div class="control-group">
+                <label for="strokeWeight">Stroke Weight: <span class="value-display" id="strokeWeightValue">1.5</span></label>
+                <input type="range" id="strokeWeight" min="0.5" max="5.0" step="0.1" value="1.5" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showGrid" onchange="updateAndDraw()">
+                    Show Grid
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="fillWaves" onchange="updateAndDraw()">
+                    Fill Between Waves
+                </label>
+            </div>
+
+            <h2>Color & Shading</h2>
+            <div class="control-group">
+                <label for="colorMode">Color Mode:</label>
+                <select id="colorMode" onchange="updateAndDraw()">
+                    <option value="monochrome">Monochrome (Black)</option>
+                    <option value="grayscale">Grayscale Gradient</option>
+                    <option value="rainbow">Rainbow Gradient</option>
+                    <option value="ocean">Ocean Gradient</option>
+                    <option value="sunset">Sunset Gradient</option>
+                    <option value="forest">Forest Gradient</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="shadingIntensity">Shading Intensity: <span class="value-display" id="shadingIntensityValue">0.5</span></label>
+                <input type="range" id="shadingIntensity" min="0" max="1" step="0.1" value="0.5" oninput="updateAndDraw()">
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="enableShading" onchange="updateAndDraw()">
+                    Enable Shading
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="randomColors" onchange="updateAndDraw()">
+                    Random Wave Colors
+                </label>
+            </div>
+
+            <h2>Export</h2>
+            <button class="btn-primary" onclick="downloadSVG()">Download as SVG</button>
+            <button class="btn-secondary" onclick="resetSettings()">Reset Settings</button>
+        </div>
+    </div>
+
+    <script>
+        let myCanvas;
+        let noiseOffset = 0;
+        let updateTimeout;
+        
+        function setup() {
+            // Use the SVG renderer instead of the default canvas renderer
+            myCanvas = createCanvas(800, 600, SVG);
+            myCanvas.parent('canvas-holder');
+            noFill();
+            stroke(0);
+            strokeWeight(1.5);
+            noLoop(); // Prevent the draw loop from running continuously
+            
+            // Update display values on start and draw initial pattern
+            updateAndDraw();
+        }
+
+        function draw() {
+            // The main draw function, which is called once after setup and then by redraw()
+            drawWavePattern();
+        }
+        
+        function updateAndDraw() {
+            // Debounce updates to improve performance
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(() => {
+                updateDisplayValues();
+                redraw();
+            }, 16); // ~60fps throttling
+        }
+        
+        function updateDisplayValues() {
+            // Update all the text values next to the sliders
+            document.getElementById('numWavesValue').textContent = document.getElementById('numWaves').value;
+            document.getElementById('amplitudeValue').textContent = document.getElementById('amplitude').value;
+            document.getElementById('noiseValue').textContent = parseFloat(document.getElementById('noise').value).toFixed(2);
+            document.getElementById('variabilityValue').textContent = parseFloat(document.getElementById('variability').value).toFixed(2);
+            document.getElementById('stretchHorizontalValue').textContent = parseFloat(document.getElementById('stretchHorizontal').value).toFixed(1);
+            document.getElementById('frequencyValue').textContent = parseFloat(document.getElementById('frequency').value).toFixed(1);
+            document.getElementById('phaseOffsetValue').textContent = document.getElementById('phaseOffset').value;
+            document.getElementById('strokeWeightValue').textContent = parseFloat(document.getElementById('strokeWeight').value).toFixed(1);
+            document.getElementById('shadingIntensityValue').textContent = parseFloat(document.getElementById('shadingIntensity').value).toFixed(1);
+        }
+        
+        // This function draws the wave pattern to the SVG canvas
+        function drawWavePattern() {
+            // Clear canvas
+            background(255);
+            
+            // Get current parameters
+            const numWaves = parseInt(document.getElementById('numWaves').value);
+            const amplitude = parseInt(document.getElementById('amplitude').value);
+            const noiseLevel = parseFloat(document.getElementById('noise').value);
+            const variability = parseFloat(document.getElementById('variability').value);
+            const stretchHorizontal = parseFloat(document.getElementById('stretchHorizontal').value);
+            const waveType = document.getElementById('waveType').value;
+            const frequency = parseFloat(document.getElementById('frequency').value);
+            const phaseOffset = parseInt(document.getElementById('phaseOffset').value);
+            const strokeWeightValue = parseFloat(document.getElementById('strokeWeight').value);
+            const showGrid = document.getElementById('showGrid').checked;
+            const fillWaves = document.getElementById('fillWaves').checked;
+            
+            // Set stroke properties
+            stroke(0);
+            strokeWeight(strokeWeightValue);
+            noFill();
+            
+            // Draw grid if enabled
+            if (showGrid) {
+                drawGrid();
+            }
+            
+            // Draw waves
+            const waves = [];
+            for (let i = 0; i < numWaves; i++) {
+                waves.push(generateWave(i, amplitude, noiseLevel, variability, stretchHorizontal, waveType, frequency, phaseOffset));
+            }
+            
+            // Draw filled areas between waves if enabled
+            if (fillWaves && numWaves > 1) {
+                drawFilledAreas(waves);
+            }
+            
+            // Draw wave lines with colors
+            const colorMode = document.getElementById('colorMode').value;
+            const randomColors = document.getElementById('randomColors').checked;
+            
+            for (let i = 0; i < waves.length; i++) {
+                const waveColor = getWaveColor(i, waves.length, colorMode, randomColors);
+                stroke(waveColor);
+                drawWave(waves[i]);
+            }
+        }
+        
+        function drawGrid() {
+            stroke(200);
+            strokeWeight(0.5);
+            
+            // Vertical lines
+            for (let x = 0; x <= width; x += 50) {
+                line(x, 0, x, height);
+            }
+            
+            // Horizontal lines
+            for (let y = 0; y <= height; y += 50) {
+                line(0, y, width, y);
+            }
+            
+            // Reset stroke
+            stroke(0);
+            strokeWeight(parseFloat(document.getElementById('strokeWeight').value));
+        }
+        
+        function generateWave(waveIndex, amplitude, noiseLevel, variability, stretchHorizontal, waveType, frequency, phaseOffset) {
+            const points = [];
+            const centerY = height / 2;
+            const waveSpacing = height / (parseInt(document.getElementById('numWaves').value) + 1);
+            const baseY = centerY + (waveIndex - parseInt(document.getElementById('numWaves').value) / 2) * waveSpacing;
+            
+            // Add some randomness to each wave's properties
+            const waveAmplitude = amplitude * (1 + (random() - 0.5) * variability);
+            const waveFrequency = frequency * (1 + (random() - 0.5) * variability);
+            const wavePhase = (phaseOffset + random() * 360) * (PI / 180);
+            
+            // Optimized resolution - use 2 pixel steps for better performance
+            // Still smooth enough for most purposes
+            for (let x = 0; x <= width; x += 2) {
+                const normalizedX = (x / width) * TWO_PI * stretchHorizontal;
+                let y = baseY;
+                
+                // Apply wave function
+                switch (waveType) {
+                    case 'sine':
+                        y += sin(normalizedX * waveFrequency + wavePhase) * waveAmplitude;
+                        break;
+                    case 'cosine':
+                        y += cos(normalizedX * waveFrequency + wavePhase) * waveAmplitude;
+                        break;
+                    case 'triangle':
+                        y += (2 / PI) * asin(sin(normalizedX * waveFrequency + wavePhase)) * waveAmplitude;
+                        break;
+                    case 'sawtooth':
+                        y += (2 / PI) * atan(tan(normalizedX * waveFrequency / 2 + wavePhase / 2)) * waveAmplitude;
+                        break;
+                    case 'square':
+                        y += (sin(normalizedX * waveFrequency + wavePhase) > 0 ? 1 : -1) * waveAmplitude;
+                        break;
+                }
+                
+                // Add noise
+                if (noiseLevel > 0) {
+                    y += noise(x * 0.01 + noiseOffset, waveIndex * 0.1) * noiseLevel * waveAmplitude * 2 - noiseLevel * waveAmplitude;
+                }
+                
+                points.push(createVector(x, y));
+            }
+            
+            return points;
+        }
+        
+        function drawWave(points) {
+            // Use simple vertex drawing for better performance
+            // Still smooth enough for most wave patterns
+            beginShape();
+            for (let i = 0; i < points.length; i++) {
+                vertex(points[i].x, points[i].y);
+            }
+            endShape();
+        }
+        
+        function drawFilledAreas(waves) {
+            if (waves.length < 2) return;
+            
+            const colorMode = document.getElementById('colorMode').value;
+            const enableShading = document.getElementById('enableShading').checked;
+            const shadingIntensity = parseFloat(document.getElementById('shadingIntensity').value);
+            
+            noStroke();
+            
+            for (let i = 0; i < waves.length - 1; i++) {
+                const wave1 = waves[i];
+                const wave2 = waves[i + 1];
+                
+                // Calculate color for this area
+                const areaColor = getAreaColor(i, waves.length - 1, colorMode, enableShading, shadingIntensity);
+                fill(areaColor);
+                
+                beginShape();
+                // Add points from first wave
+                for (let j = 0; j < wave1.length; j++) {
+                    vertex(wave1[j].x, wave1[j].y);
+                }
+                // Add points from second wave in reverse
+                for (let j = wave2.length - 1; j >= 0; j--) {
+                    vertex(wave2[j].x, wave2[j].y);
+                }
+                endShape(CLOSE);
+            }
+            
+            // Reset fill and stroke
+            noFill();
+            stroke(0);
+            strokeWeight(parseFloat(document.getElementById('strokeWeight').value));
+        }
+        
+        // Color and shading functions
+        function getWaveColor(waveIndex, totalWaves, colorMode, randomColors) {
+            if (randomColors) {
+                // Generate random color based on wave index for consistency
+                randomSeed(waveIndex * 1000);
+                return color(random(255), random(255), random(255));
+            }
+            
+            const progress = waveIndex / (totalWaves - 1);
+            return getColorFromMode(progress, colorMode);
+        }
+        
+        function getAreaColor(areaIndex, totalAreas, colorMode, enableShading, shadingIntensity) {
+            const progress = areaIndex / (totalAreas - 1);
+            const baseColor = getColorFromMode(progress, colorMode);
+            
+            if (enableShading) {
+                // Apply shading based on area position
+                const shadeFactor = 1 - (shadingIntensity * (1 - progress));
+                return color(
+                    red(baseColor) * shadeFactor,
+                    green(baseColor) * shadeFactor,
+                    blue(baseColor) * shadeFactor,
+                    30 // Semi-transparent
+                );
+            }
+            
+            return color(red(baseColor), green(baseColor), blue(baseColor), 30);
+        }
+        
+        function getColorFromMode(progress, colorMode) {
+            switch (colorMode) {
+                case 'monochrome':
+                    return color(0, 0, 0);
+                    
+                case 'grayscale':
+                    const gray = 255 * (1 - progress);
+                    return color(gray, gray, gray);
+                    
+                case 'rainbow':
+                    const hue = progress * 360;
+                    return color(hue, 80, 90);
+                    
+                case 'ocean':
+                    const oceanHue = 180 + progress * 60; // Blue to cyan
+                    const oceanSat = 70 + progress * 30;
+                    const oceanBright = 60 + progress * 40;
+                    return color(oceanHue, oceanSat, oceanBright);
+                    
+                case 'sunset':
+                    const sunsetHue = 0 + progress * 60; // Red to orange
+                    const sunsetSat = 80 + progress * 20;
+                    const sunsetBright = 70 + progress * 30;
+                    return color(sunsetHue, sunsetSat, sunsetBright);
+                    
+                case 'forest':
+                    const forestHue = 90 + progress * 30; // Green to yellow-green
+                    const forestSat = 60 + progress * 40;
+                    const forestBright = 40 + progress * 50;
+                    return color(forestHue, forestSat, forestBright);
+                    
+                default:
+                    return color(0, 0, 0);
+            }
+        }
+        
+        // --- SIMPLIFIED SVG EXPORT ---
+        // The p5.svg.js library overloads the save() function to handle SVG export automatically.
+        function downloadSVG() {
+            save('wave-pattern.svg');
+        }
+        
+        function resetSettings() {
+            document.getElementById('numWaves').value = 5;
+            document.getElementById('amplitude').value = 50;
+            document.getElementById('noise').value = 0.1;
+            document.getElementById('variability').value = 0.3;
+            document.getElementById('stretchHorizontal').value = 1.0;
+            document.getElementById('waveType').value = 'sine';
+            document.getElementById('frequency').value = 1.0;
+            document.getElementById('phaseOffset').value = 0;
+            document.getElementById('strokeWeight').value = 1.5;
+            document.getElementById('showGrid').checked = false;
+            document.getElementById('fillWaves').checked = false;
+            document.getElementById('colorMode').value = 'monochrome';
+            document.getElementById('shadingIntensity').value = 0.5;
+            document.getElementById('enableShading').checked = false;
+            document.getElementById('randomColors').checked = false;
+            
+            updateAndDraw();
+        }
+    </script>
+</body>
+</html>
