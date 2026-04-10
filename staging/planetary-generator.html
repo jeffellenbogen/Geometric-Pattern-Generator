@@ -435,80 +435,88 @@
                 name: "Mercury",
                 radius: 3,
                 distance: 50,
-                period: 88, // days
+                period: 87.97, // days
                 angle: 0,
-                eccentricity: 0.2056, // Real orbital eccentricity
+                eccentricity: 0.2056,
                 semiMajorAxis: 50,
+                meanAnomalyAtEpoch: 3.0507, // radians at J2000.0 (Jan 1.5, 2000)
                 show: true
             },
             venus: {
                 name: "Venus",
                 radius: 4,
                 distance: 75,
-                period: 225, // days
+                period: 224.7, // days
                 angle: 0,
                 eccentricity: 0.0067,
                 semiMajorAxis: 75,
+                meanAnomalyAtEpoch: 0.8806,
                 show: true
             },
             earth: {
                 name: "Earth",
                 radius: 4,
                 distance: 100,
-                period: 365, // days
+                period: 365.25, // days
                 angle: 0,
                 eccentricity: 0.0167,
                 semiMajorAxis: 100,
+                meanAnomalyAtEpoch: 6.2399,
                 show: true
             },
             mars: {
                 name: "Mars",
                 radius: 3,
                 distance: 150,
-                period: 687, // days
+                period: 686.97, // days
                 angle: 0,
                 eccentricity: 0.0934,
                 semiMajorAxis: 150,
+                meanAnomalyAtEpoch: 0.3385,
                 show: true
             },
             jupiter: {
                 name: "Jupiter",
                 radius: 12,
                 distance: 250,
-                period: 4333, // days
+                period: 4332.59, // days
                 angle: 0,
                 eccentricity: 0.0489,
                 semiMajorAxis: 250,
+                meanAnomalyAtEpoch: 0.3492,
                 show: true
             },
             saturn: {
                 name: "Saturn",
                 radius: 10,
                 distance: 350,
-                period: 10759, // days
+                period: 10759.22, // days
                 angle: 0,
                 eccentricity: 0.0565,
                 semiMajorAxis: 350,
+                meanAnomalyAtEpoch: 5.5324,
                 show: true
             },
             uranus: {
                 name: "Uranus",
                 radius: 6,
                 distance: 450,
-                period: 30687, // days
+                period: 30688.5, // days
                 angle: 0,
                 eccentricity: 0.0457,
                 semiMajorAxis: 450,
+                meanAnomalyAtEpoch: 2.4617,
                 show: true
             },
             neptune: {
                 name: "Neptune",
                 radius: 6,
                 distance: 550,
-                period: 60190, // days
+                period: 60182.0, // days
                 angle: 0,
                 eccentricity: 0.0113,
                 semiMajorAxis: 550,
+                meanAnomalyAtEpoch: 4.4724,
                 show: true
             }
         };
@@ -584,12 +592,14 @@
             totalDays += 15;
             
             // Update planet positions based on their orbital periods
+            // totalDays is measured from J2000.0 (Jan 1.5, 2000); we subtract 1.5 days to align
+            const daysFromEpoch = totalDays - 1.5;
             Object.keys(planets).forEach(planetKey => {
                 const planet = planets[planetKey];
                 if (planet.period > 0) {
-                    // Calculate angle based on time and orbital period
-                    const angleProgress = totalDays / planet.period;
-                    planet.angle = (angleProgress * TWO_PI) % TWO_PI;
+                    // Mean anomaly = epoch offset + elapsed fraction of orbit
+                    const meanAnomaly = planet.meanAnomalyAtEpoch + (daysFromEpoch / planet.period) * TWO_PI;
+                    planet.angle = ((meanAnomaly % TWO_PI) + TWO_PI) % TWO_PI;
                 }
             });
         }
