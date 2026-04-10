@@ -1,0 +1,40 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [staging]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout staging
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          path: source
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: deploy
+
+      - name: Sync staging files
+        run: |
+          mkdir -p deploy/staging
+          rsync -av --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            source/ deploy/staging/
+
+      - name: Commit and push
+        working-directory: deploy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "Deploy staging preview [skip ci]"
+          git push origin gh-pages
